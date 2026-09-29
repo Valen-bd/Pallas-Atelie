@@ -1,4 +1,4 @@
-/*navbar */
+﻿/*navbar */
 .navbar {
     background: rgba(241, 243, 255, 0.688);
     box-shadow: 0 2px 10px rgba(0, 0, 0, 0.15);
@@ -116,7 +116,7 @@ html {
 }
 body {
     font-family: 'Segoe UI', 'Roboto', 'Helvetica Neue', sans-serif;
-    background-image: url("images/pallas3.png");
+    background-image: url("../images/pallas3.png");
     background-size: cover;
     background-position: center;
     background-attachment: fixed;
@@ -312,7 +312,7 @@ body {
         }
 
         body.register-page {
-            background-image: url("images/pallas2.png");
+            background-image: url("../images/pallas2.png");
             background-size: cover;
             background-position: center;
             background-attachment: fixed;
@@ -321,7 +321,7 @@ body {
 
         body.sobre-page {
             min-height: 100vh;
-            background-image: url("images/pallas3.png");
+            background-image: url("../images/pallas3.png");
             background-size: cover;
             background-position: center;
             background-attachment: fixed;
@@ -392,7 +392,7 @@ body {
         }
 
         .entrar-page {
-            background-image: url("images/pallas3.png");
+            background-image: url("../images/pallas3.png");
             background-size: cover;
             background-position: center;
             background-attachment: fixed;
@@ -1038,7 +1038,7 @@ body {
         }
 
         .home-system-page {
-            background-image: url("images/pallas3.png");
+            background-image: url("../images/pallas3.png");
             background-size: cover;
             background-position: center;
             background-attachment: fixed;
@@ -1082,7 +1082,7 @@ body {
         }
 
         .jobs-page {
-            background-image: url("images/pallas3.png");
+            background-image: url("../images/pallas3.png");
             background-size: cover;
             background-position: center;
             background-attachment: fixed;
@@ -1374,3 +1374,4 @@ body {
                 padding: 1rem;
             }
         }
+

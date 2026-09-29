@@ -1,2 +1,0 @@
-# Pallas-Atelie
-Projeto TCC
