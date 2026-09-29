@@ -1,0 +1,13 @@
+Modules
+
+Inserção de dados
+
+Implantação do sistema
+
+
+Carrosel nas "atualizações" da página incial
+
+Icones:
+https://icons.getbootstrap.com/icons/bell/ (sino)
+https://icons.getbootstrap.com/icons/search/ (lupa)
+https://icons.getbootstrap.com/icons/megaphone/ (megaofone)

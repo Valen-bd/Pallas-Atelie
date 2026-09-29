@@ -1,0 +1,113 @@
+<!DOCTYPE html>
+<html lang="pt-br">
+<head>
+	<meta charset="UTF-8">
+	<meta name="viewport" content="width=device-width, initial-scale=1.0">
+	<title>Editar perfil | Pallas Ateliê</title>
+	<link rel="stylesheet" href="https://cdn.jsdelivr.net/npm/bootstrap-icons@1.11.3/font/bootstrap-icons.min.css">
+	<link rel="stylesheet" href="./style.css">
+</head>
+<body class="entrar-page">
+	<header class="social-header">
+		<div class="social-header-content">
+			<div class="logo">
+				<a href="inicial.html">
+					<img src="images/pa1.png" id="logimagem" alt="Logo Pallas Ateliê">
+				</a>
+			</div>
+
+			<div class="social-search">
+				<i class="bi bi-search" aria-hidden="true"></i>
+				<input type="text" placeholder="Pesquisar...">
+			</div>
+
+			<div class="social-actions">
+				<a href="notificacoes.html" class="icon-badge" aria-label="Notificações"><i class="bi bi-bell" aria-hidden="true"></i></a>
+				<a href="propostas-empresa.html" class="icon-badge propostas-empresa-icon" aria-label="Propostas para empresas"><i class="bi bi-megaphone" aria-hidden="true"></i></a>
+				<a href="propostas-artista.html" class="icon-badge propostas-artista-icon" aria-label="Propostas para artistas"><i class="bi bi-megaphone" aria-hidden="true"></i></a>
+				<a href="perfil.html" class="profile-mini">
+					<div class="avatar small">U</div>
+					<span>Usuário</span>
+				</a>
+			</div>
+		</div>
+	</header>
+
+	<main class="container edit-profile-container">
+		<div class="frase">Editar perfil</div>
+		<div class="divider"></div>
+
+		<form id="edit-profile-form" class="register-form">
+			<label class="form-label" for="nome">Nome</label>
+			<input class="form-input" id="nome" name="nome" type="text" value="Usuário" required>
+
+			<label class="form-label" for="usuario">Nome de usuário</label>
+			<input class="form-input" id="usuario" name="usuario" type="text" value="@usuario" required>
+
+			<label class="form-label" for="bio">Biografia</label>
+			<textarea class="form-input" id="bio" name="bio" rows="4" placeholder="Conte um pouco sobre você">Biografia do usuário.</textarea>
+
+			<label class="form-label" for="pais">País</label>
+			<input class="form-input" id="pais" name="pais" type="text" value="Brasil" required>
+
+			<label class="form-label" for="estado">Estado</label>
+			<input class="form-input" id="estado" name="estado" type="text" value="São Paulo" required>
+
+			<label class="form-label" for="cidade">Cidade</label>
+			<input class="form-input" id="cidade" name="cidade" type="text" value="São Paulo" required>
+
+			<label class="form-label" for="email">E-mail</label>
+			<input class="form-input" id="email" name="email" type="email" value="usuario@email.com" required>
+
+			<label class="form-label" for="numero">Número</label>
+			<input class="form-input" id="numero" name="numero" type="tel" value="(00) 00000-0000" required>
+
+			<label class="form-label" for="arte">Tipo de arte</label>
+			<input class="form-input" id="arte" name="arte" type="text" value="Desenho digital" required>
+
+			<button class="btn btn-cadastrar register-submit" type="submit">Salvar alterações</button>
+			<a href="perfil.html" class="btn btn-entrar back-button">Cancelar</a>
+		</form>
+	</main>
+
+	<script>
+		const header = document.querySelector('.social-header');
+		const userType = localStorage.getItem('pallasUserType');
+		if (userType === 'empresa') {
+			const artistaIcon = document.querySelector('.propostas-artista-icon');
+			if (artistaIcon) artistaIcon.style.display = 'none';
+		}
+		if (userType === 'artista') {
+			const empresaIcon = document.querySelector('.propostas-empresa-icon');
+			if (empresaIcon) empresaIcon.style.display = 'none';
+		}
+
+		const editForm = document.querySelector('#edit-profile-form');
+		const savedProfile = JSON.parse(localStorage.getItem('pallasProfile') || 'null');
+		if (savedProfile) {
+			Object.entries(savedProfile).forEach(([field, value]) => {
+				const input = editForm.elements[field];
+				if (input) input.value = value;
+			});
+		}
+
+		editForm.addEventListener('submit', (event) => {
+			event.preventDefault();
+			const profileData = Object.fromEntries(new FormData(event.currentTarget));
+			localStorage.setItem('pallasProfile', JSON.stringify(profileData));
+			window.location.href = 'perfil.html?updated=true';
+		});
+
+		let lastScrollTop = 0;
+		window.addEventListener('scroll', () => {
+			const currentScroll = window.scrollY;
+			if (currentScroll > 80 && currentScroll > lastScrollTop) {
+				header.classList.add('is-hidden');
+			} else {
+				header.classList.remove('is-hidden');
+			}
+			lastScrollTop = currentScroll <= 0 ? 0 : currentScroll;
+		});
+	</script>
+</body>
+</html>

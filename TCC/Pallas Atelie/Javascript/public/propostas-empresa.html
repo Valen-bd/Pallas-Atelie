@@ -1,0 +1,73 @@
+<!DOCTYPE html>
+<html lang="pt-br">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Vagas Artísticas | Pallas Ateliê</title>
+    <link rel="stylesheet" href="https://cdn.jsdelivr.net/npm/bootstrap-icons@1.11.3/font/bootstrap-icons.min.css">
+    <link rel="stylesheet" href="./style.css">
+</head>
+<body class="jobs-page">
+    <header class="social-header">
+        <div class="social-header-content">
+            <div class="logo">
+                <a href="inicial.html">
+                    <img src="images/pa1.png" id="logimagem" alt="Logo Pallas Ateliê">
+                </a>
+            </div>
+
+            <div class="social-search">
+                <i class="bi bi-search" aria-hidden="true"></i>
+                <input type="text" placeholder="Pesquisar...">
+            </div>
+
+            <div class="social-actions">
+                <a href="notificacoes.html" class="icon-badge" aria-label="Notificações"><i class="bi bi-bell" aria-hidden="true"></i></a>
+                <a href="propostas-empresa.html" class="icon-badge propostas-empresa-icon" aria-label="Propostas para empresas"><i class="bi bi-megaphone" aria-hidden="true"></i></a>
+                <a href="propostas-artista.html" class="icon-badge propostas-artista-icon" aria-label="Propostas para artistas"><i class="bi bi-megaphone" aria-hidden="true"></i></a>
+                <a href="perfil.html" class="profile-mini">
+                    <div class="avatar small">U</div>
+                    <span>Usuário</span>
+                </a>
+            </div>
+        </div>
+    </header>
+
+    <main class="jobs-page-shell">
+        <section class="jobs-hero">
+            <div>
+                <span class="eyebrow">Oportunidades criativas</span>
+                <h1>Encontre vagas para talentos da arte </h1>
+                <p class="hero-text">
+                    Conectamos empresas com artistas.
+                    Aqui você encontra oportunidades para trabalhar em várias áreas artísticas!
+                </p>
+                <div class="hero-actions">
+                    <button class="btn btn-cadastrar" type="button">Anunciar vaga</button>
+                </div>
+            </div>
+
+            <div class="jobs-highlight-card">
+                <h3>Vagas em destaque</h3>
+                <ul>
+                    <li>Ilustração digital</li>
+                    <li>Aquarela</li>
+                    <li>Arte 3D</li>
+                </ul>
+            </div>
+        </section>
+
+    </main>
+    <script>
+        const userType = localStorage.getItem('pallasUserType');
+        if (userType === 'empresa') {
+            const artistaIcon = document.querySelector('.propostas-artista-icon');
+            if (artistaIcon) artistaIcon.style.display = 'none';
+        }
+        if (userType === 'artista') {
+            const empresaIcon = document.querySelector('.propostas-empresa-icon');
+            if (empresaIcon) empresaIcon.style.display = 'none';
+        }
+    </script>
+</body>
+</html>

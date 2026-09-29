@@ -1,0 +1,179 @@
+<!DOCTYPE html>
+<html lang="pt-br">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Entrar | Pallas Ateliê</title>
+    <link rel="stylesheet" href="https://cdn.jsdelivr.net/npm/bootstrap-icons@1.11.3/font/bootstrap-icons.min.css">
+    <link rel="stylesheet" href="./style.css">
+</head>
+<body class="entrar-page">
+    <header class="social-header">
+        <div class="social-header-content">
+            <div class="logo">
+                <img src="images/pa1.png" id="logimagem" alt="Logo Pallas Ateliê">
+            </div>
+
+            <div class="social-search">
+                <i class="bi bi-search" aria-hidden="true"></i>
+                <input type="text" placeholder="Pesquisar...">
+            </div>
+
+            <div class="social-actions">
+                <a href="notificacoes.html" class="icon-badge" aria-label="Notificações"><i class="bi bi-bell" aria-hidden="true"></i></a>
+                <a href="propostas-empresa.html" class="icon-badge propostas-empresa-icon" aria-label="Propostas para empresas"><i class="bi bi-megaphone" aria-hidden="true"></i></a>
+                <a href="propostas-artista.html" class="icon-badge propostas-artista-icon" aria-label="Propostas para artistas"><i class="bi bi-megaphone" aria-hidden="true"></i></a>
+                <a href="perfil.html" class="profile-mini">
+                    <div class="avatar small">U</div>
+                    <span>Usuário</span>
+                </a>
+            </div>
+        </div>
+    </header>
+
+    <main class="social-home">
+        <aside class="social-sidebar">
+            <a href="perfil.html" class="profile-card social-profile profile-link">
+                <div class="avatar">U</div>
+                <div>
+                    <h3>Usuário</h3>
+                    <p>@usuario</p>
+                </div>
+                <p class="profile-bio">Biografia do usuário.</p>
+            </a>
+
+            <section class="panel-card">
+                <h4>Explorar</h4>
+                <ul>
+                    <li> Início</li>
+                    <li> Portfólio</li>
+                    <li> Eventos</li>
+                </ul>
+            </section>
+        </aside>
+
+        <section class="social-feed">
+            <section class="composer-card">
+                <h3>O que você quer compartilhar hoje?</h3>
+                <div class="composer-actions">
+                    <span> Foto</span>
+                    <span> Vídeo</span>
+                    <span> Inspiração</span>
+                </div>
+            </section>
+
+            <section class="story-carousel">
+                <div class="story-card story-highlight">
+                    <span>+</span>
+                    <p>Nova atualização</p>
+                </div>
+            </section>
+
+            <article class="post-card" data-post-id="inicio-1">
+                <div class="post-header">
+                    <div class="post-user">
+                        <div class="avatar small">U</div>
+                        <div>
+                            <strong>Usuário</strong>
+                            <p>Há 2 horas</p>
+                        </div>
+                    </div>
+                    <span class="tag">Nova coleção</span>
+                </div>
+                <p>Legenda</p>
+                <img src="images/pallas2.png" alt="Post artístico">
+                <div class="post-engagement">
+                    <button class="post-action like-button" type="button" aria-label="Curtir arte" aria-pressed="false"><i class="bi bi-heart" aria-hidden="true"></i> Curtir <span class="like-count">0</span></button>
+                    <span class="post-metric"><i class="bi bi-chat" aria-hidden="true"></i> <span class="comment-count">0</span> comentários</span>
+                </div>
+                <ul class="comments-list" aria-live="polite"></ul>
+                <form class="comment-form">
+                    <input type="text" placeholder="Escreva um comentário..." aria-label="Comentário" maxlength="160">
+                    <button class="post-action" type="submit" aria-label="Enviar comentário"><i class="bi bi-send" aria-hidden="true"></i></button>
+                </form>
+            </article>
+
+            <article class="post-card" data-post-id="inicio-2">
+                <div class="post-header">
+                    <div class="post-user">
+                        <div class="avatar small">U</div>
+                        <div>
+                            <strong>Usuário</strong>
+                            <p>Hoje</p>
+                        </div>
+                    </div>
+                    <span class="tag alt">Em destaque</span>
+                </div>
+                <p>Legenda</p>
+                <img src="images/pallas2.png" alt="Post artístico">
+                <div class="post-engagement">
+                    <button class="post-action like-button" type="button" aria-label="Curtir arte" aria-pressed="false"><i class="bi bi-heart" aria-hidden="true"></i> Curtir <span class="like-count">0</span></button>
+                    <span class="post-metric"><i class="bi bi-chat" aria-hidden="true"></i> <span class="comment-count">0</span> comentários</span>
+                </div>
+                <ul class="comments-list" aria-live="polite"></ul>
+                <form class="comment-form">
+                    <input type="text" placeholder="Escreva um comentário..." aria-label="Comentário" maxlength="160">
+                    <button class="post-action" type="submit" aria-label="Enviar comentário"><i class="bi bi-send" aria-hidden="true"></i></button>
+                </form>
+            </article>
+        </section>
+
+        <aside class="social-aside">
+            <section class="panel-card">
+                <h4>Em alta</h4>
+                <ul>
+                    <li>#artes</li>
+                    <li>#design</li>
+                    <li>#criatividade</li>
+                </ul>
+            </section>
+
+            <section class="panel-card">
+                <h4>Sugestões</h4>
+                <div class="suggestion">
+                    <div class="avatar small">U</div>
+                    <div>
+                        <strong>Usuário</strong>
+                        <p>Artista Digital</p>
+                    </div>
+                </div>
+                <div class="suggestion">
+                    <div class="avatar small">U</div>
+                    <div>
+                        <strong>Usuário</strong>
+                        <p>Artista Aquarela</p>
+                    </div>
+                </div>
+            </section>
+        </aside>
+    </main>
+
+    <script>
+        const header = document.querySelector('.social-header');
+        const userType = localStorage.getItem('pallasUserType');
+        if (userType === 'empresa') {
+            const artistaIcon = document.querySelector('.propostas-artista-icon');
+            if (artistaIcon) artistaIcon.style.display = 'none';
+        }
+        if (userType === 'artista') {
+            const empresaIcon = document.querySelector('.propostas-empresa-icon');
+            if (empresaIcon) empresaIcon.style.display = 'none';
+        }
+
+        let lastScrollTop = 0;
+
+        window.addEventListener('scroll', () => {
+            const currentScroll = window.scrollY;
+
+            if (currentScroll > 80 && currentScroll > lastScrollTop) {
+                header.classList.add('is-hidden');
+            } else {
+                header.classList.remove('is-hidden');
+            }
+
+            lastScrollTop = currentScroll <= 0 ? 0 : currentScroll;
+        });
+    </script>
+    <script src="./post-interactions.js"></script>
+</body>
+</html>
