@@ -1,0 +1,187 @@
+<!DOCTYPE html>
+<html lang="pt-br">
+<head>
+	<meta charset="UTF-8">
+	<meta name="viewport" content="width=device-width, initial-scale=1.0">
+	<title>Nova publicação | Pallas Ateliê</title>
+	<link rel="stylesheet" href="https://cdn.jsdelivr.net/npm/bootstrap-icons@1.11.3/font/bootstrap-icons.min.css">
+	<link rel="stylesheet" href="./css/style.css">
+</head>
+<body class="entrar-page new-post-page">
+	<header class="social-header">
+		<div class="social-header-content">
+			<div class="logo">
+                <a href="inicial.html">
+                    <img src="images/pa1.png" id="logimagem" alt="Logo Pallas Ateliê">
+                </a>
+            </div>
+			<div class="social-search">
+				<i class="bi bi-search" aria-hidden="true"></i>
+				<input type="text" placeholder="Pesquisar..." aria-label="Pesquisar">
+			</div>
+			<div class="social-actions">
+				<a href="notificacoes.html" class="icon-badge" aria-label="Notificações"><i class="bi bi-bell" aria-hidden="true"></i></a>
+				<a href="propostas-empresa.html" class="icon-badge propostas-empresa-icon" aria-label="Propostas para empresas"><i class="bi bi-megaphone" aria-hidden="true"></i></a>
+				<a href="propostas-artista.html" class="icon-badge propostas-artista-icon" aria-label="Propostas para artistas"><i class="bi bi-megaphone" aria-hidden="true"></i></a>
+				<a href="perfil.html" class="profile-mini">
+					<div class="avatar small" id="header-avatar">U</div>
+					<span id="header-name">Usuário</span>
+				</a>
+			</div>
+		</div>
+	</header>
+
+	<main class="new-post-main">
+		<a href="inicial.html" class="new-post-back mobile-back"><i class="bi bi-arrow-left" aria-hidden="true"></i> Voltar ao início</a>
+		<div class="new-post-heading">
+			<p class="new-post-eyebrow">COMUNIDADE</p>
+			<h1>Compartilhe o que você está criando.</h1>
+		</div>
+
+		<form class="new-post-form" id="new-post-form">
+			<div class="new-post-author">
+				<div class="avatar" id="post-avatar">U</div>
+				<div>
+					<strong id="post-author-name">Usuário</strong>
+					<span>Publicação visível para a comunidade</span>
+				</div>
+			</div>
+
+			<label class="new-post-label" for="post-caption">Sua publicação</label>
+			<textarea id="post-caption" name="caption" maxlength="500" placeholder="No que você está trabalhando?" required></textarea>
+			<div class="new-post-field-meta"><span></span><span id="caption-count">0/500</span></div>
+
+			<label class="new-post-label" for="post-category">Categoria</label>
+			<select id="post-category" name="category">
+				<option value="Portfólio">Portfólio</option>
+				<option value="Desenho Digital">Desenho Digital</option>
+				<option value="Design Gráfico">Design Gráfico</option>
+				<option value="Pixel Art">Pixel Art</option>
+                <option value="Outro">Outro</option>
+			</select>
+
+			<div class="new-post-label image-label">Imagem <span>Opcional</span></div>
+			<label class="image-upload" for="post-image" id="image-upload-area">
+				<i class="bi bi-image" aria-hidden="true"></i>
+				<strong>Adicionar uma imagem</strong>
+				<span>JPG, PNG ou WEBP, até 2 MB</span>
+				<input id="post-image" name="image" type="file" accept="image/jpeg,image/png,image/webp">
+			</label>
+			<div class="image-preview-wrap" id="image-preview-wrap" hidden>
+				<img id="image-preview" alt="Prévia da imagem selecionada">
+				<button class="remove-image" type="button" id="remove-image" aria-label="Remover imagem"><i class="bi bi-x-lg" aria-hidden="true"></i></button>
+			</div>
+			<p class="new-post-message" id="new-post-message" role="status" aria-live="polite"></p>
+			<div class="new-post-footer">
+				<a href="inicial.html" class="new-post-cancel">Cancelar</a>
+				<button type="submit" class="new-post-submit"><i class="bi bi-send" aria-hidden="true"></i> Publicar</button>
+			</div>
+		</form>
+	</main>
+
+	<script>
+		const header = document.querySelector('.social-header');
+		const userType = localStorage.getItem('pallasUserType');
+		if (userType === 'empresa') {
+			const artistaIcon = document.querySelector('.propostas-artista-icon');
+			if (artistaIcon) artistaIcon.style.display = 'none';
+		}
+		if (userType === 'artista') {
+			const empresaIcon = document.querySelector('.propostas-empresa-icon');
+			if (empresaIcon) empresaIcon.style.display = 'none';
+		}
+
+		const profile = JSON.parse(localStorage.getItem('pallasProfile') || 'null');
+		const authorName = profile?.nome?.trim() || 'Usuário';
+		const authorInitial = authorName.charAt(0).toUpperCase();
+		document.querySelector('#header-name').textContent = authorName;
+		document.querySelector('#post-author-name').textContent = authorName;
+		document.querySelectorAll('#header-avatar, #post-avatar').forEach((avatar) => {
+			avatar.textContent = authorInitial;
+		});
+
+		const form = document.querySelector('#new-post-form');
+		const caption = document.querySelector('#post-caption');
+		const imageInput = document.querySelector('#post-image');
+		const previewWrap = document.querySelector('#image-preview-wrap');
+		const preview = document.querySelector('#image-preview');
+		const uploadArea = document.querySelector('#image-upload-area');
+		const message = document.querySelector('#new-post-message');
+		let lastScrollTop = 0;
+
+		window.addEventListener('scroll', () => {
+			const currentScroll = window.scrollY;
+			if (currentScroll > 80 && currentScroll > lastScrollTop) {
+				header.classList.add('is-hidden');
+			} else {
+				header.classList.remove('is-hidden');
+			}
+			lastScrollTop = currentScroll <= 0 ? 0 : currentScroll;
+		});
+
+		caption.addEventListener('input', () => {
+			document.querySelector('#caption-count').textContent = `${caption.value.length}/500`;
+		});
+
+		imageInput.addEventListener('change', () => {
+			const image = imageInput.files[0];
+			message.textContent = '';
+			if (!image) return;
+			if (!['image/jpeg', 'image/png', 'image/webp'].includes(image.type) || image.size > 2 * 1024 * 1024) {
+				message.textContent = 'Escolha uma imagem JPG, PNG ou WEBP de até 2 MB.';
+				imageInput.value = '';
+				return;
+			}
+			preview.src = URL.createObjectURL(image);
+			previewWrap.hidden = false;
+			uploadArea.hidden = true;
+		});
+
+		document.querySelector('#remove-image').addEventListener('click', () => {
+			URL.revokeObjectURL(preview.src);
+			preview.removeAttribute('src');
+			imageInput.value = '';
+			previewWrap.hidden = true;
+			uploadArea.hidden = false;
+		});
+
+		form.addEventListener('submit', (event) => {
+			event.preventDefault();
+			const image = imageInput.files[0];
+			const publish = (imageData = '') => {
+				const posts = JSON.parse(localStorage.getItem('pallasPosts') || '[]');
+				posts.unshift({
+					id: `post-${Date.now()}`,
+					caption: caption.value.trim(),
+					category: document.querySelector('#post-category').value,
+					image: imageData,
+					author: authorName,
+					initial: authorInitial,
+					createdAt: new Date().toISOString()
+				});
+				try {
+					localStorage.setItem('pallasPosts', JSON.stringify(posts));
+					window.location.href = 'inicial.html';
+				} catch {
+					message.textContent = 'Não foi possível salvar a publicação. Remova a imagem ou escolha um arquivo menor.';
+				}
+			};
+
+			if (!caption.value.trim()) {
+				caption.focus();
+				return;
+			}
+			if (!image) {
+				publish();
+				return;
+			}
+			const reader = new FileReader();
+			reader.addEventListener('load', () => publish(reader.result));
+			reader.addEventListener('error', () => {
+				message.textContent = 'Não foi possível carregar essa imagem. Tente selecionar outro arquivo.';
+			});
+			reader.readAsDataURL(image);
+		});
+	</script>
+</body>
+</html>
