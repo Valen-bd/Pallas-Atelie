@@ -25,7 +25,26 @@
             const category = document.createElement('span');
             category.className = 'tag';
             category.textContent = savedPost.category || 'Portfólio';
-            header.append(user, category);
+            const deleteButton = document.createElement('button');
+            deleteButton.className = 'post-delete-button';
+            deleteButton.type = 'button';
+            deleteButton.setAttribute('aria-label', 'Excluir publicação');
+            deleteButton.textContent = 'Excluir';
+            deleteButton.addEventListener('click', () => {
+                if (!window.confirm('Tem certeza de que deseja excluir esta publicação?')) return;
+
+                try {
+                    const currentPosts = JSON.parse(localStorage.getItem('pallasPosts') || '[]');
+                    localStorage.setItem('pallasPosts', JSON.stringify(
+                        currentPosts.filter((postItem) => postItem.id !== savedPost.id)
+                    ));
+                    localStorage.removeItem(`pallasPost_${savedPost.id}`);
+                    post.remove();
+                } catch {
+                    window.alert('Não foi possível excluir a publicação. Tente novamente.');
+                }
+            });
+            header.append(user, category, deleteButton);
             post.append(header);
 
             const caption = document.createElement('p');

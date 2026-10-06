@@ -1,0 +1,352 @@
+<!DOCTYPE html>
+<html lang="pt-br">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Meu portfólio | Pallas Ateliê</title>
+    <link rel="stylesheet" href="https://cdn.jsdelivr.net/npm/bootstrap-icons@1.11.3/font/bootstrap-icons.min.css">
+    <link rel="stylesheet" href="./css/style.css">
+</head>
+<body class="entrar-page portfolio-page">
+    <header class="social-header">
+        <div class="social-header-content">
+            <div class="logo">
+                <a href="inicial.html">
+                    <img src="images/pa1.png" id="logimagem" alt="Logo Pallas Ateliê">
+                </a>
+            </div>
+            <div class="social-search">
+                <i class="bi bi-search" aria-hidden="true"></i>
+                <input type="text" placeholder="Pesquisar..." aria-label="Pesquisar">
+            </div>
+            <div class="social-actions">
+                <a href="notificacoes.html" class="icon-badge" aria-label="Notificações"><i class="bi bi-bell" aria-hidden="true"></i></a>
+                <a href="propostas-empresa.html" class="icon-badge propostas-empresa-icon" aria-label="Propostas para empresas"><i class="bi bi-megaphone" aria-hidden="true"></i></a>
+                <a href="propostas-artista.html" class="icon-badge propostas-artista-icon" aria-label="Propostas para artistas"><i class="bi bi-megaphone" aria-hidden="true"></i></a>
+                <a href="perfil.html" class="profile-mini">
+                    <div class="avatar small" id="header-avatar">U</div>
+                    <span id="header-name">Usuário</span>
+                </a>
+            </div>
+        </div>
+    </header>
+
+    <main class="portfolio-container">
+        <a href="perfil.html" class="portfolio-back"><i class="bi bi-arrow-left" aria-hidden="true"></i> Voltar ao perfil</a>
+        <section class="portfolio-hero">
+            <div class="portfolio-hero-copy">
+                <p class="portfolio-eyebrow">GALERIA PESSOAL</p>
+                <h1>Meu portfólio</h1>
+                <p>Um espaço para reunir e compartilhar tudo o que você cria.</p>
+            </div>
+            <div class="portfolio-artist">
+                <a href="perfil.html" class="portfolio-avatar-link" aria-label="Acessar perfil do usuário">
+                    <div class="avatar portfolio-avatar" id="portfolio-avatar">U</div>
+                </a>
+                <div>
+                    <strong id="portfolio-name">Usuário</strong>
+                    <span id="portfolio-username">@usuario</span>
+                    <span id="portfolio-art-type">Artista</span>
+                </div>
+            </div>
+        </section>
+
+        <section class="portfolio-gallery-section" aria-labelledby="portfolio-gallery-title">
+            <div class="portfolio-gallery-heading">
+                <div>
+                    <p class="portfolio-eyebrow">TRABALHOS PUBLICADOS</p>
+                    <h2 id="portfolio-gallery-title">Minhas criações</h2>
+                </div>
+                <span class="portfolio-count" id="portfolio-count">0 trabalhos</span>
+            </div>
+            <div class="portfolio-grid" id="portfolio-grid" aria-live="polite"></div>
+            <div class="portfolio-empty" id="portfolio-empty" hidden>
+                <div class="portfolio-empty-icon"><i class="bi bi-palette" aria-hidden="true"></i></div>
+                <h3>Seu portfólio começa aqui</h3>
+                <p>Publique suas criações para elas aparecerem nesta galeria.</p>
+                <a href="novopost.html" class="portfolio-create-link"><i class="bi bi-plus-circle" aria-hidden="true"></i> Criar publicação</a>
+            </div>
+            <div class="portfolio-gallery-footer">
+                <a href="novopost.html" class="portfolio-create-link"><i class="bi bi-plus-circle" aria-hidden="true"></i> Adicionar trabalho</a>
+            </div>
+        </section>
+    </main>
+
+    <dialog class="portfolio-editor" id="portfolio-editor" aria-labelledby="portfolio-editor-title">
+        <form id="portfolio-editor-form">
+            <div class="portfolio-editor-heading">
+                <div>
+                    <p class="portfolio-eyebrow">EDITAR TRABALHO</p>
+                    <h2 id="portfolio-editor-title">Atualize sua criação</h2>
+                </div>
+                <button class="portfolio-editor-close" type="button" id="portfolio-editor-close" aria-label="Fechar edição">
+                    <i class="bi bi-x-lg" aria-hidden="true"></i>
+                </button>
+            </div>
+            <label class="portfolio-editor-label" for="portfolio-edit-caption">Título ou legenda</label>
+            <textarea id="portfolio-edit-caption" maxlength="500" required></textarea>
+            <label class="portfolio-editor-label" for="portfolio-edit-category">Categoria</label>
+            <select id="portfolio-edit-category">
+                <option value="Portfólio">Portfólio</option>
+                <option value="Desenho Digital">Desenho Digital</option>
+                <option value="Design Gráfico">Design Gráfico</option>
+                <option value="Pixel Art">Pixel Art</option>
+                <option value="Outro">Outro</option>
+            </select>
+            <label class="portfolio-editor-label" for="portfolio-edit-image">Imagem <span>JPG, PNG ou WEBP, até 2 MB</span></label>
+            <div class="portfolio-editor-image" id="portfolio-edit-image-preview-wrap" hidden>
+                <img id="portfolio-edit-image-preview" alt="Prévia da imagem do trabalho">
+                <button class="portfolio-editor-remove-image" type="button" id="portfolio-edit-remove-image">Remover imagem</button>
+            </div>
+            <input id="portfolio-edit-image" type="file" accept="image/jpeg,image/png,image/webp">
+            <p class="portfolio-editor-message" id="portfolio-editor-message" role="status" aria-live="polite"></p>
+            <div class="portfolio-editor-actions">
+                <button class="portfolio-editor-delete" type="button" id="portfolio-editor-delete">Excluir trabalho</button>
+                <button class="portfolio-editor-cancel" type="button" id="portfolio-editor-cancel">Cancelar</button>
+                <button class="portfolio-create-link" type="submit">Salvar alterações</button>
+            </div>
+        </form>
+    </dialog>
+
+    <script>
+        const header = document.querySelector('.social-header');
+        const userType = localStorage.getItem('pallasUserType');
+        if (userType === 'empresa') {
+            document.querySelector('.propostas-artista-icon').style.display = 'none';
+        }
+        if (userType === 'artista') {
+            document.querySelector('.propostas-empresa-icon').style.display = 'none';
+        }
+
+        const profile = JSON.parse(localStorage.getItem('pallasProfile') || 'null');
+        const authorName = profile?.nome?.trim() || 'Usuário';
+        const initial = authorName.charAt(0).toUpperCase();
+        document.querySelector('#header-name').textContent = authorName;
+        document.querySelector('#portfolio-name').textContent = authorName;
+        document.querySelector('#portfolio-username').textContent = profile?.usuario ? `@${profile.usuario}` : '@usuario';
+        document.querySelector('#portfolio-art-type').textContent = profile?.arte?.trim() || 'Artista';
+        document.querySelectorAll('#header-avatar, #portfolio-avatar').forEach((avatar) => {
+            avatar.textContent = initial;
+        });
+
+        let posts = JSON.parse(localStorage.getItem('pallasPosts') || '[]');
+        const grid = document.querySelector('#portfolio-grid');
+        const emptyState = document.querySelector('#portfolio-empty');
+        const count = document.querySelector('#portfolio-count');
+        const galleryFooter = document.querySelector('.portfolio-gallery-footer');
+        const editor = document.querySelector('#portfolio-editor');
+        const editorForm = document.querySelector('#portfolio-editor-form');
+        const captionInput = document.querySelector('#portfolio-edit-caption');
+        const categoryInput = document.querySelector('#portfolio-edit-category');
+        const imageInput = document.querySelector('#portfolio-edit-image');
+        const imagePreviewWrap = document.querySelector('#portfolio-edit-image-preview-wrap');
+        const imagePreview = document.querySelector('#portfolio-edit-image-preview');
+        const removeImageButton = document.querySelector('#portfolio-edit-remove-image');
+        const editorMessage = document.querySelector('#portfolio-editor-message');
+        const deletePostButton = document.querySelector('#portfolio-editor-delete');
+        let editingPostId = null;
+        let removeCurrentImage = false;
+        let previewObjectUrl = null;
+
+        const updateGalleryState = () => {
+            count.textContent = `${posts.length} ${posts.length === 1 ? 'trabalho' : 'trabalhos'}`;
+            emptyState.hidden = posts.length > 0;
+            galleryFooter.hidden = posts.length === 0;
+        };
+
+        const renderPosts = () => {
+            grid.replaceChildren();
+            updateGalleryState();
+            posts.forEach((post) => {
+                const card = document.createElement('article');
+                card.className = 'portfolio-work';
+                const cover = document.createElement('div');
+                cover.className = 'portfolio-work-cover';
+                if (post.image) {
+                    const image = document.createElement('img');
+                    image.src = post.image;
+                    image.alt = post.caption ? `Obra: ${post.caption}` : 'Imagem do trabalho';
+                    cover.append(image);
+                } else {
+                    const icon = document.createElement('i');
+                    icon.className = 'bi bi-palette';
+                    icon.setAttribute('aria-hidden', 'true');
+                    cover.classList.add('portfolio-work-cover-placeholder');
+                    cover.append(icon);
+                }
+
+                const details = document.createElement('div');
+                details.className = 'portfolio-work-details';
+                const category = document.createElement('span');
+                category.className = 'portfolio-work-category';
+                category.textContent = post.category || 'Portfólio';
+                const caption = document.createElement('h3');
+                caption.textContent = post.caption || 'Trabalho sem título';
+                details.append(category, caption);
+                if (post.createdAt) {
+                    const date = new Date(post.createdAt);
+                    if (!Number.isNaN(date.getTime())) {
+                        const dateLabel = document.createElement('time');
+                        dateLabel.dateTime = date.toISOString();
+                        dateLabel.textContent = new Intl.DateTimeFormat('pt-BR', {
+                            day: 'numeric',
+                            month: 'long',
+                            year: 'numeric'
+                        }).format(date);
+                        details.append(dateLabel);
+                    }
+                }
+
+                const editButton = document.createElement('button');
+                editButton.className = 'portfolio-edit-button';
+                editButton.type = 'button';
+                editButton.innerHTML = '<i class="bi bi-pencil" aria-hidden="true"></i> Editar';
+                editButton.setAttribute('aria-label', `Editar ${post.caption || 'trabalho'}`);
+                editButton.addEventListener('click', () => {
+                    editingPostId = post.id;
+                    captionInput.value = post.caption || '';
+                    categoryInput.value = post.category || 'Portfólio';
+                    imageInput.value = '';
+                    removeCurrentImage = false;
+                    editorMessage.textContent = '';
+                    if (post.image) {
+                        imagePreview.src = post.image;
+                        imagePreviewWrap.hidden = false;
+                    } else {
+                        imagePreview.removeAttribute('src');
+                        imagePreviewWrap.hidden = true;
+                    }
+                    editor.showModal();
+                    captionInput.focus();
+                });
+                const actions = document.createElement('div');
+                actions.className = 'portfolio-work-actions';
+                actions.append(editButton);
+                card.append(cover, details, actions);
+                grid.append(card);
+            });
+        };
+
+        const clearPreviewObjectUrl = () => {
+            if (!previewObjectUrl) return;
+            URL.revokeObjectURL(previewObjectUrl);
+            previewObjectUrl = null;
+        };
+
+        const closeEditor = () => {
+            editor.close();
+            clearPreviewObjectUrl();
+            imageInput.value = '';
+        };
+
+        imageInput.addEventListener('change', () => {
+            const image = imageInput.files[0];
+            editorMessage.textContent = '';
+            if (!image) return;
+            if (!['image/jpeg', 'image/png', 'image/webp'].includes(image.type) || image.size > 2 * 1024 * 1024) {
+                editorMessage.textContent = 'Escolha uma imagem JPG, PNG ou WEBP de até 2 MB.';
+                imageInput.value = '';
+                return;
+            }
+            clearPreviewObjectUrl();
+            previewObjectUrl = URL.createObjectURL(image);
+            imagePreview.src = previewObjectUrl;
+            imagePreviewWrap.hidden = false;
+            removeCurrentImage = false;
+        });
+
+        removeImageButton.addEventListener('click', () => {
+            imageInput.value = '';
+            clearPreviewObjectUrl();
+            imagePreview.removeAttribute('src');
+            imagePreviewWrap.hidden = true;
+            removeCurrentImage = true;
+        });
+
+        editorForm.addEventListener('submit', (event) => {
+            event.preventDefault();
+            const updatedCaption = captionInput.value.trim();
+            if (!updatedCaption) {
+                captionInput.focus();
+                return;
+            }
+
+            const savePost = (imageData) => {
+                try {
+                    const currentPosts = JSON.parse(localStorage.getItem('pallasPosts') || '[]');
+                    const postIndex = currentPosts.findIndex((post) => post.id === editingPostId);
+                    if (postIndex === -1) {
+                        editorMessage.textContent = 'Este trabalho não foi encontrado. Atualize a página e tente novamente.';
+                        return;
+                    }
+                    currentPosts[postIndex] = {
+                        ...currentPosts[postIndex],
+                        caption: updatedCaption,
+                        category: categoryInput.value,
+                        image: imageData
+                    };
+                    localStorage.setItem('pallasPosts', JSON.stringify(currentPosts));
+                    posts = currentPosts;
+                    renderPosts();
+                    closeEditor();
+                } catch {
+                    editorMessage.textContent = 'Não foi possível salvar as alterações. Tente usar uma imagem menor.';
+                }
+            };
+
+            const selectedImage = imageInput.files[0];
+            if (selectedImage) {
+                const reader = new FileReader();
+                reader.addEventListener('load', () => {
+                    if (typeof reader.result !== 'string') {
+                        editorMessage.textContent = 'Não foi possível carregar essa imagem. Tente selecionar outro arquivo.';
+                        return;
+                    }
+                    savePost(reader.result);
+                });
+                reader.addEventListener('error', () => {
+                    editorMessage.textContent = 'Não foi possível carregar essa imagem. Tente selecionar outro arquivo.';
+                });
+                reader.readAsDataURL(selectedImage);
+                return;
+            }
+
+            const currentPost = posts.find((post) => post.id === editingPostId);
+            savePost(removeCurrentImage ? '' : currentPost?.image || '');
+        });
+
+        deletePostButton.addEventListener('click', () => {
+            if (!window.confirm('Tem certeza de que deseja excluir este trabalho?')) return;
+
+            try {
+                const currentPosts = JSON.parse(localStorage.getItem('pallasPosts') || '[]');
+                if (!currentPosts.some((post) => post.id === editingPostId)) {
+                    editorMessage.textContent = 'Este trabalho não foi encontrado. Atualize a página e tente novamente.';
+                    return;
+                }
+                const remainingPosts = currentPosts.filter((post) => post.id !== editingPostId);
+                localStorage.setItem('pallasPosts', JSON.stringify(remainingPosts));
+                localStorage.removeItem(`pallasPost_${editingPostId}`);
+                posts = remainingPosts;
+                renderPosts();
+                closeEditor();
+            } catch {
+                editorMessage.textContent = 'Não foi possível excluir o trabalho. Tente novamente.';
+            }
+        });
+
+        document.querySelector('#portfolio-editor-close').addEventListener('click', closeEditor);
+        document.querySelector('#portfolio-editor-cancel').addEventListener('click', closeEditor);
+        editor.addEventListener('close', clearPreviewObjectUrl);
+
+        renderPosts();
+
+        let lastScrollTop = 0;
+        window.addEventListener('scroll', () => {
+            const currentScroll = window.scrollY;
+            header.classList.toggle('is-hidden', currentScroll > 80 && currentScroll > lastScrollTop);
+            lastScrollTop = Math.max(0, currentScroll);
+        });
+    </script>
+</body>
+</html>
