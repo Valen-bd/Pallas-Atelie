@@ -3,11 +3,10 @@ Modules
 Inserção de dados
 
 Implantação do sistema
+ 
+mudar nome de artes plásticas
 
+englobar outras maneiras de artes visuais
 
-Carrosel nas "atualizações" da página incial
+tirar fotografia e adicionar ARTES VISUAIS
 
-Icones:
-https://icons.getbootstrap.com/icons/bell/ (sino)
-https://icons.getbootstrap.com/icons/search/ (lupa)
-https://icons.getbootstrap.com/icons/megaphone/ (megaofone)

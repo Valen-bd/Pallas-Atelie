@@ -149,8 +149,23 @@
             if (empresaIcon) empresaIcon.style.display = 'none';
         }
         const savedProfile = JSON.parse(localStorage.getItem('pallasProfile') || 'null');
+        const profileName = savedProfile?.nome?.trim() || 'Usuário';
+        const profileInitial = profileName.charAt(0).toUpperCase();
+        document.querySelectorAll('.avatar').forEach((avatar) => {
+            avatar.textContent = profileInitial;
+            if (savedProfile?.avatar) {
+                const image = document.createElement('img');
+                image.src = savedProfile.avatar;
+                image.alt = `Foto de perfil de ${profileName}`;
+                avatar.replaceChildren(image);
+                avatar.classList.add('has-image');
+            }
+        });
+        if (savedProfile?.cover) {
+            document.querySelector('.perfil-cover').style.backgroundImage = `url("${savedProfile.cover}")`;
+        }
         if (savedProfile) {
-            document.querySelector('.perfil-identidade h1').textContent = savedProfile.nome;
+            document.querySelector('.perfil-identidade h1').textContent = profileName;
             document.querySelector('.perfil-identidade p').textContent = `${savedProfile.usuario} • ${savedProfile.arte}`;
             document.querySelector('.perfil-bio-box p').textContent = savedProfile.bio;
 
@@ -176,4 +191,3 @@
     <script src="./js/post-interactions.js"></script>
 </body>
 </html>
-

@@ -38,6 +38,26 @@
 		<div class="divider"></div>
 
 		<form id="edit-profile-form" class="register-form">
+			<div class="profile-image-editors">
+				<section class="profile-image-editor">
+					<h2>Foto de perfil</h2>
+					<div class="avatar profile-image-preview" id="profile-avatar-preview" aria-label="Prévia da foto de perfil">U</div>
+					<label class="form-label" for="profile-avatar-input">Escolher foto</label>
+					<input class="form-input" id="profile-avatar-input" type="file" accept="image/jpeg,image/png,image/webp">
+					<button class="profile-image-remove" id="remove-avatar" type="button">Remover foto</button>
+				</section>
+
+				<section class="profile-image-editor">
+					<h2>Banner</h2>
+					<div class="profile-cover-preview" id="profile-cover-preview" aria-label="Prévia do banner"></div>
+					<label class="form-label" for="profile-cover-input">Escolher banner</label>
+					<input class="form-input" id="profile-cover-input" type="file" accept="image/jpeg,image/png,image/webp">
+					<button class="profile-image-remove" id="remove-cover" type="button">Remover banner</button>
+				</section>
+				<p class="profile-image-hint">Imagens JPG, PNG ou WEBP de até 1 MB.</p>
+				<p class="profile-image-message" id="profile-image-message" role="status" aria-live="polite"></p>
+			</div>
+
 			<label class="form-label" for="nome">Nome</label>
 			<input class="form-input" id="nome" name="nome" type="text" value="Usuário" required>
 
@@ -84,17 +104,111 @@
 
 		const editForm = document.querySelector('#edit-profile-form');
 		const savedProfile = JSON.parse(localStorage.getItem('pallasProfile') || 'null');
+		const avatarInput = document.querySelector('#profile-avatar-input');
+		const coverInput = document.querySelector('#profile-cover-input');
+		const avatarPreview = document.querySelector('#profile-avatar-preview');
+		const coverPreview = document.querySelector('#profile-cover-preview');
+		const imageMessage = document.querySelector('#profile-image-message');
+		const maxImageSize = 1024 * 1024;
+		const acceptedImageTypes = ['image/jpeg', 'image/png', 'image/webp'];
+		let avatarData = savedProfile?.avatar || '';
+		let coverData = savedProfile?.cover || '';
+
+		function showAvatar(source) {
+			if (source) {
+				const image = document.createElement('img');
+				image.src = source;
+				image.alt = 'Prévia da foto de perfil';
+				avatarPreview.replaceChildren(image);
+				avatarPreview.classList.add('has-image');
+				return;
+			}
+
+			avatarPreview.textContent = savedProfile?.nome?.trim()?.charAt(0).toUpperCase() || 'U';
+			avatarPreview.classList.remove('has-image');
+		}
+
+		function showCover(source) {
+			coverPreview.style.backgroundImage = source ? `url("${source}")` : '';
+			coverPreview.classList.toggle('has-image', Boolean(source));
+		}
+
+		function readImage(file) {
+			return new Promise((resolve, reject) => {
+				const reader = new FileReader();
+				reader.addEventListener('load', () => {
+					if (typeof reader.result === 'string') {
+						resolve(reader.result);
+					} else {
+						reject(new Error('Não foi possível carregar essa imagem.'));
+					}
+				});
+				reader.addEventListener('error', () => reject(new Error('Não foi possível carregar essa imagem.')));
+				reader.readAsDataURL(file);
+			});
+		}
+
+		function watchImageInput(input, showImage) {
+			input.addEventListener('change', () => {
+				const image = input.files[0];
+				if (!image) return;
+				if (!acceptedImageTypes.includes(image.type) || image.size > maxImageSize) {
+					imageMessage.textContent = 'Escolha uma imagem JPG, PNG ou WEBP de até 1 MB.';
+					input.value = '';
+					return;
+				}
+
+				imageMessage.textContent = '';
+				readImage(image).then((source) => {
+					if (input.files[0] === image) showImage(source);
+				}).catch(() => {
+					if (input.files[0] === image) {
+						imageMessage.textContent = 'Não foi possível carregar essa imagem. Tente selecionar outro arquivo.';
+						input.value = '';
+					}
+				});
+			});
+		}
+
+		function removeImage(input, showImage) {
+			input.value = '';
+			showImage('');
+			imageMessage.textContent = '';
+		}
+
+		watchImageInput(avatarInput, showAvatar);
+		watchImageInput(coverInput, showCover);
+		document.querySelector('#remove-avatar').addEventListener('click', () => {
+			avatarData = '';
+			removeImage(avatarInput, showAvatar);
+		});
+		document.querySelector('#remove-cover').addEventListener('click', () => {
+			coverData = '';
+			removeImage(coverInput, showCover);
+		});
+
 		if (savedProfile) {
 			Object.entries(savedProfile).forEach(([field, value]) => {
 				const input = editForm.elements[field];
 				if (input) input.value = value;
 			});
 		}
+		showAvatar(avatarData);
+		showCover(coverData);
 
-		editForm.addEventListener('submit', (event) => {
+		editForm.addEventListener('submit', async (event) => {
 			event.preventDefault();
 			const profileData = Object.fromEntries(new FormData(event.currentTarget));
-			localStorage.setItem('pallasProfile', JSON.stringify(profileData));
+			try {
+				if (avatarInput.files[0]) avatarData = await readImage(avatarInput.files[0]);
+				if (coverInput.files[0]) coverData = await readImage(coverInput.files[0]);
+				profileData.avatar = avatarData;
+				profileData.cover = coverData;
+				localStorage.setItem('pallasProfile', JSON.stringify(profileData));
+			} catch (error) {
+				imageMessage.textContent = 'Não foi possível salvar as imagens. Tente arquivos menores.';
+				return;
+			}
 			window.location.href = 'perfil.html?updated=true';
 		});
 
@@ -111,5 +225,3 @@
 	</script>
 </body>
 </html>
-
-
