@@ -1,0 +1,195 @@
+<!DOCTYPE html>
+<html lang="pt-br">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Descobrir perfis | Pallas Ateliê</title>
+    <link rel="shortcut icon" type="image/png" href="images/PA-TCC logo.png">
+    <link rel="stylesheet" href="https://cdn.jsdelivr.net/npm/bootstrap-icons@1.11.3/font/bootstrap-icons.min.css">
+    <link rel="stylesheet" href="./css/style.css">
+</head>
+<body class="entrar-page discover-page">
+    <header class="social-header">
+        <div class="social-header-content">
+            <div class="logo">
+                <a href="inicial.html">
+                    <img src="images/pa1.png" id="logimagem" alt="Logo Pallas Ateliê">
+                </a>
+            </div>
+
+            <label class="social-search">
+                <i class="bi bi-search" aria-hidden="true"></i>
+                <input id="profile-search" type="search" placeholder="Pesquisar perfis..." aria-label="Pesquisar perfis">
+            </label>
+
+            <div class="social-actions">
+                <a href="notificacoes.html" class="icon-badge" aria-label="Notificações"><i class="bi bi-bell" aria-hidden="true"></i></a>
+                <a href="propostas-empresa.html" class="icon-badge propostas-empresa-icon" aria-label="Propostas para empresas"><i class="bi bi-megaphone" aria-hidden="true"></i></a>
+                <a href="propostas-artista.html" class="icon-badge propostas-artista-icon" aria-label="Propostas para artistas"><i class="bi bi-megaphone" aria-hidden="true"></i></a>
+                <a href="perfil.html" class="profile-mini">
+                    <div class="avatar small">U</div>
+                    <span>Meu perfil</span>
+                </a>
+            </div>
+        </div>
+    </header>
+
+    <main class="discover-container">
+        <a href="inicial.html" class="discover-back"><i class="bi bi-arrow-left" aria-hidden="true"></i> Voltar ao início</a>
+        <section class="discover-heading" aria-labelledby="discover-title">
+            <span class="discover-eyebrow"><i class="bi bi-compass" aria-hidden="true"></i> Comunidade Pallas</span>
+            <h1 id="discover-title">Descubra novos perfis</h1>
+            <p>Conheça artistas e empresas, explore seus trabalhos e encontre inspiração para novas conexões.</p>
+        </section>
+
+        <section class="discover-controls" aria-label="Filtros de perfis">
+            <div class="discover-filters" role="group" aria-label="Filtrar por tipo de perfil">
+                <button class="discover-filter is-active" type="button" data-filter="todos" aria-pressed="true">Todos</button>
+                <button class="discover-filter" type="button" data-filter="artista" aria-pressed="false">Artistas</button>
+                <button class="discover-filter" type="button" data-filter="empresa" aria-pressed="false">Empresas</button>
+            </div>
+            <p class="discover-count" aria-live="polite"><strong id="profile-count">6</strong> perfis encontrados</p>
+        </section>
+
+        <section class="discover-grid" id="profile-grid" aria-label="Perfis da comunidade">
+            <article class="discover-card" data-category="artista">
+                <div class="discover-card-top">
+                    <div class="avatar discover-avatar avatar-coral" aria-hidden="true">MC</div>
+                    <span class="discover-type"><i class="bi bi-brush" aria-hidden="true"></i> Artista</span>
+                </div>
+                <h2>Marina Costa</h2>
+                <p class="discover-handle">@marinacosta.art</p>
+                <p class="discover-bio">Ilustradora apaixonada por cores, natureza e narrativas visuais.</p>
+                <div class="discover-tags"><span>Ilustração</span><span>Aquarela</span></div>
+                <p class="discover-location"><i class="bi bi-geo-alt" aria-hidden="true"></i> Florianópolis, SC</p>
+                <a class="discover-profile-link" href="perfil-publico.html?perfil=marina-costa">Ver perfil <i class="bi bi-arrow-right" aria-hidden="true"></i></a>
+            </article>
+
+            <article class="discover-card" data-category="artista">
+                <div class="discover-card-top">
+                    <div class="avatar discover-avatar avatar-blue" aria-hidden="true">RA</div>
+                    <span class="discover-type"><i class="bi bi-brush" aria-hidden="true"></i> Artista</span>
+                </div>
+                <h2>Rafael Almeida</h2>
+                <p class="discover-handle">@rafaelalmeida.design</p>
+                <p class="discover-bio">Designer gráfico criando identidades visuais com personalidade.</p>
+                <div class="discover-tags"><span>Design gráfico</span><span>Identidade visual</span></div>
+                <p class="discover-location"><i class="bi bi-geo-alt" aria-hidden="true"></i> Curitiba, PR</p>
+                <a class="discover-profile-link" href="perfil-publico.html?perfil=rafael-almeida">Ver perfil <i class="bi bi-arrow-right" aria-hidden="true"></i></a>
+            </article>
+
+            <article class="discover-card" data-category="empresa">
+                <div class="discover-card-top">
+                    <div class="avatar discover-avatar avatar-green" aria-hidden="true">EA</div>
+                    <span class="discover-type"><i class="bi bi-building" aria-hidden="true"></i> Empresa</span>
+                </div>
+                <h2>Estúdio Aurora</h2>
+                <p class="discover-handle">@estudioaurora</p>
+                <p class="discover-bio">Estúdio independente que conecta arte, design e projetos locais.</p>
+                <div class="discover-tags"><span>Estúdio criativo</span><span>Colaborações</span></div>
+                <p class="discover-location"><i class="bi bi-geo-alt" aria-hidden="true"></i> São Paulo, SP</p>
+                <a class="discover-profile-link" href="perfil-publico.html?perfil=estudio-aurora">Ver perfil <i class="bi bi-arrow-right" aria-hidden="true"></i></a>
+            </article>
+
+            <article class="discover-card" data-category="artista">
+                <div class="discover-card-top">
+                    <div class="avatar discover-avatar avatar-violet" aria-hidden="true">BL</div>
+                    <span class="discover-type"><i class="bi bi-brush" aria-hidden="true"></i> Artista</span>
+                </div>
+                <h2>Beatriz Lima</h2>
+                <p class="discover-handle">@bia.lima.art</p>
+                <p class="discover-bio">Ceramista e artesã; transformo ideias em peças feitas à mão.</p>
+                <div class="discover-tags"><span>Cerâmica</span><span>Artesanato</span></div>
+                <p class="discover-location"><i class="bi bi-geo-alt" aria-hidden="true"></i> Belo Horizonte, MG</p>
+                <a class="discover-profile-link" href="perfil-publico.html?perfil=beatriz-lima">Ver perfil <i class="bi bi-arrow-right" aria-hidden="true"></i></a>
+            </article>
+
+            <article class="discover-card" data-category="empresa">
+                <div class="discover-card-top">
+                    <div class="avatar discover-avatar avatar-gold" aria-hidden="true">CL</div>
+                    <span class="discover-type"><i class="bi bi-building" aria-hidden="true"></i> Empresa</span>
+                </div>
+                <h2>Casa Linha</h2>
+                <p class="discover-handle">@casalinha</p>
+                <p class="discover-bio">Marca de decoração que valoriza o trabalho de artistas brasileiros.</p>
+                <div class="discover-tags"><span>Decoração</span><span>Arte local</span></div>
+                <p class="discover-location"><i class="bi bi-geo-alt" aria-hidden="true"></i> Recife, PE</p>
+                <a class="discover-profile-link" href="perfil-publico.html?perfil=casa-linha">Ver perfil <i class="bi bi-arrow-right" aria-hidden="true"></i></a>
+            </article>
+
+            <article class="discover-card" data-category="artista">
+                <div class="discover-card-top">
+                    <div class="avatar discover-avatar avatar-pink" aria-hidden="true">JP</div>
+                    <span class="discover-type"><i class="bi bi-brush" aria-hidden="true"></i> Artista</span>
+                </div>
+                <h2>João Pedro Santos</h2>
+                <p class="discover-handle">@jpsantos.ilustra</p>
+                <p class="discover-bio">Ilustração digital e concept art inspirados por fantasia e cultura pop.</p>
+                <div class="discover-tags"><span>Arte digital</span><span>Concept art</span></div>
+                <p class="discover-location"><i class="bi bi-geo-alt" aria-hidden="true"></i> Porto Alegre, RS</p>
+                <a class="discover-profile-link" href="perfil-publico.html?perfil=joao-pedro-santos">Ver perfil <i class="bi bi-arrow-right" aria-hidden="true"></i></a>
+            </article>
+        </section>
+
+        <p class="discover-empty" id="profile-empty" hidden>Nenhum perfil encontrado. Tente outro nome ou filtro.</p>
+    </main>
+
+    <script>
+        const header = document.querySelector('.social-header');
+        const userType = localStorage.getItem('pallasUserType');
+        if (userType === 'empresa') {
+            document.querySelector('.propostas-artista-icon').style.display = 'none';
+        }
+        if (userType === 'artista') {
+            document.querySelector('.propostas-empresa-icon').style.display = 'none';
+        }
+
+        const searchInput = document.querySelector('#profile-search');
+        const filterButtons = document.querySelectorAll('.discover-filter');
+        const profileCards = document.querySelectorAll('.discover-card');
+        const profileCount = document.querySelector('#profile-count');
+        const emptyState = document.querySelector('#profile-empty');
+        let selectedFilter = 'todos';
+
+        function updateProfiles() {
+            const searchTerm = searchInput.value.trim().toLocaleLowerCase('pt-BR');
+            let visibleCount = 0;
+
+            profileCards.forEach((card) => {
+                const matchesFilter = selectedFilter === 'todos' || card.dataset.category === selectedFilter;
+                const matchesSearch = card.textContent.toLocaleLowerCase('pt-BR').includes(searchTerm);
+                const isVisible = matchesFilter && matchesSearch;
+                card.hidden = !isVisible;
+                if (isVisible) visibleCount += 1;
+            });
+
+            profileCount.textContent = visibleCount;
+            emptyState.hidden = visibleCount > 0;
+        }
+
+        searchInput.addEventListener('input', updateProfiles);
+        filterButtons.forEach((button) => {
+            button.addEventListener('click', () => {
+                selectedFilter = button.dataset.filter;
+                filterButtons.forEach((filterButton) => {
+                    const isActive = filterButton === button;
+                    filterButton.classList.toggle('is-active', isActive);
+                    filterButton.setAttribute('aria-pressed', String(isActive));
+                });
+                updateProfiles();
+            });
+        });
+
+        let lastScrollTop = 0;
+        window.addEventListener('scroll', () => {
+            const currentScroll = window.scrollY;
+            if (currentScroll > 80 && currentScroll > lastScrollTop) {
+                header.classList.add('is-hidden');
+            } else {
+                header.classList.remove('is-hidden');
+            }
+            lastScrollTop = currentScroll <= 0 ? 0 : currentScroll;
+        });
+    </script>
+</body>
+</html>

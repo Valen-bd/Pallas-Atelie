@@ -3,7 +3,7 @@
 <head>
     <meta charset="UTF-8">
     <meta name="viewport" content="width=device-width, initial-scale=1.0">
-    <title>Vagas Artísticas | Pallas Ateliê</title>
+    <title>Oportunidades para Artistas | Pallas Ateliê</title>
     <link rel="shortcut icon" type="image/png" href="images/PA-TCC logo.png">
     <link rel="stylesheet" href="https://cdn.jsdelivr.net/npm/bootstrap-icons@1.11.3/font/bootstrap-icons.min.css">
     <link rel="stylesheet" href="./css/style.css">
@@ -38,14 +38,40 @@
         <section class="jobs-hero">
             <div>
                 <span class="eyebrow">Oportunidades criativas</span>
-                <h1>Encontre vagas para talentos da arte </h1>
+                <h1>Anuncie oportunidades para talentos da arte</h1>
                 <p class="hero-text">
-                    Conectamos empresas com artistas.
-                    Aqui você encontra oportunidades para trabalhar em várias áreas artísticas!
+                    Apresente projetos, divulgue vagas e encontre artistas para colaborar com sua empresa.
                 </p>
                 <div class="hero-actions">
-                    <button class="btn btn-cadastrar" type="button">Anunciar vaga</button>
+                    <button class="btn btn-cadastrar" id="open-opportunity-form" type="button" aria-expanded="false" aria-controls="opportunity-form-panel">Anunciar oportunidade</button>
                 </div>
+                <section class="partnership-form-panel" id="opportunity-form-panel" hidden>
+                    <h2>Crie uma oportunidade</h2>
+                    <p>Conte aos artistas sobre a vaga, projeto ou colaboração que sua empresa oferece.</p>
+                    <form id="opportunity-form">
+                        <label for="opportunity-caption">Detalhes da oportunidade</label>
+                        <textarea id="opportunity-caption" name="caption" rows="5" maxlength="500" placeholder="Ex.: Procuramos uma pessoa ilustradora para desenvolver a identidade visual de uma nova coleção..." required></textarea>
+                        <div class="partnership-form-meta">
+                            <span id="opportunity-message" role="status" aria-live="polite"></span>
+                            <span id="opportunity-count">0/500</span>
+                        </div>
+                        <label class="new-post-label image-label" for="opportunity-image">Imagem <span>Opcional</span></label>
+                        <label class="image-upload" for="opportunity-image" id="opportunity-image-upload">
+                            <i class="bi bi-image" aria-hidden="true"></i>
+                            <strong>Adicionar uma imagem</strong>
+                            <span>JPG, PNG ou WEBP, até 2 MB</span>
+                            <input id="opportunity-image" name="image" type="file" accept="image/jpeg,image/png,image/webp">
+                        </label>
+                        <div class="image-preview-wrap" id="opportunity-image-preview-wrap" hidden>
+                            <img id="opportunity-image-preview" alt="Prévia da imagem da oportunidade">
+                            <button class="remove-image" type="button" id="remove-opportunity-image" aria-label="Remover imagem"><i class="bi bi-x-lg" aria-hidden="true"></i></button>
+                        </div>
+                        <div class="partnership-form-actions">
+                            <button class="partnership-cancel" id="cancel-opportunity" type="button">Cancelar</button>
+                            <button class="btn btn-cadastrar" type="submit"><i class="bi bi-send" aria-hidden="true"></i> Publicar na comunidade</button>
+                        </div>
+                    </form>
+                </section>
             </div>
 
             <div class="jobs-highlight-card">
@@ -58,6 +84,19 @@
             </div>
         </section>
 
+        <section class="partnership-list-section" aria-labelledby="opportunity-list-title">
+            <div class="partnership-list-heading">
+                <div>
+                    <span class="eyebrow">Comunidade</span>
+                    <h2 id="opportunity-list-title">Oportunidades para artistas</h2>
+                    <p>Confira vagas e projetos anunciados por empresas.</p>
+                </div>
+                <a class="partnership-community-link" href="inicial.html">Ver comunidade <i class="bi bi-arrow-right" aria-hidden="true"></i></a>
+            </div>
+            <p class="partnership-list-status" id="opportunity-list-status" role="status" aria-live="polite" hidden></p>
+            <div class="partnership-list" id="opportunity-list"></div>
+            <p class="partnership-list-empty" id="opportunity-list-empty" hidden>Ainda não há oportunidades anunciadas. Seja a primeira empresa a publicar uma!</p>
+        </section>
     </main>
     <script>
         const userType = localStorage.getItem('pallasUserType');
@@ -69,8 +108,210 @@
             const empresaIcon = document.querySelector('.propostas-empresa-icon');
             if (empresaIcon) empresaIcon.style.display = 'none';
         }
+
+        const opportunityButton = document.querySelector('#open-opportunity-form');
+        const opportunityPanel = document.querySelector('#opportunity-form-panel');
+        const opportunityForm = document.querySelector('#opportunity-form');
+        const opportunityCaption = document.querySelector('#opportunity-caption');
+        const opportunityMessage = document.querySelector('#opportunity-message');
+        const opportunityCount = document.querySelector('#opportunity-count');
+        const opportunityImage = document.querySelector('#opportunity-image');
+        const imageUpload = document.querySelector('#opportunity-image-upload');
+        const imagePreviewWrap = document.querySelector('#opportunity-image-preview-wrap');
+        const imagePreview = document.querySelector('#opportunity-image-preview');
+        const removeImageButton = document.querySelector('#remove-opportunity-image');
+        const publishButton = opportunityForm.querySelector('[type="submit"]');
+        const opportunityList = document.querySelector('#opportunity-list');
+        const opportunityListEmpty = document.querySelector('#opportunity-list-empty');
+        const opportunityListStatus = document.querySelector('#opportunity-list-status');
+        let imagePreviewUrl = '';
+
+        function renderOpportunities() {
+            let posts;
+            try {
+                posts = JSON.parse(localStorage.getItem('pallasPosts') || '[]');
+                if (!Array.isArray(posts)) {
+                    throw new TypeError('As publicações salvas precisam estar em uma lista.');
+                }
+            } catch (error) {
+                opportunityList.replaceChildren();
+                opportunityListEmpty.hidden = true;
+                opportunityListStatus.textContent = 'Não foi possível carregar as oportunidades salvas.';
+                opportunityListStatus.hidden = false;
+                console.error('Erro ao carregar oportunidades:', error);
+                return;
+            }
+
+            const opportunities = posts.filter((post) => post?.category === 'Oportunidade para artistas');
+            opportunityListStatus.hidden = true;
+            opportunityList.replaceChildren(...opportunities.map((post) => {
+                const card = document.createElement('article');
+                card.className = 'partnership-list-card';
+
+                const header = document.createElement('div');
+                header.className = 'partnership-list-card-header';
+                const identity = document.createElement('div');
+                identity.className = 'partnership-list-author';
+                const avatar = document.createElement('div');
+                avatar.className = 'avatar small';
+                avatar.textContent = post.initial || post.author?.trim()?.charAt(0).toUpperCase() || 'U';
+                const author = document.createElement('strong');
+                author.textContent = post.author || 'Empresa';
+                const authorDetails = document.createElement('div');
+                authorDetails.append(author);
+                const date = document.createElement('span');
+                const createdAt = new Date(post.createdAt);
+                date.textContent = Number.isNaN(createdAt.getTime())
+                    ? 'Oportunidade para artistas'
+                    : createdAt.toLocaleString('pt-BR', { dateStyle: 'short', timeStyle: 'short' });
+                authorDetails.append(date);
+                identity.append(avatar, authorDetails);
+
+                const category = document.createElement('span');
+                category.className = 'partnership-list-badge';
+                category.textContent = 'Oportunidade';
+                header.append(identity, category);
+
+                const caption = document.createElement('p');
+                caption.className = 'partnership-list-caption';
+                caption.textContent = post.caption || '';
+                card.append(header, caption);
+
+                if (typeof post.image === 'string' && post.image) {
+                    const image = document.createElement('img');
+                    image.className = 'partnership-list-image';
+                    image.src = post.image;
+                    image.alt = `Imagem da oportunidade de ${post.author || 'empresa'}`;
+                    card.append(image);
+                }
+
+                return card;
+            }));
+            opportunityListEmpty.hidden = opportunities.length > 0;
+        }
+
+        renderOpportunities();
+        window.addEventListener('storage', (event) => {
+            if (event.key === 'pallasPosts') renderOpportunities();
+        });
+
+        opportunityButton.addEventListener('click', () => {
+            opportunityPanel.hidden = false;
+            opportunityButton.setAttribute('aria-expanded', 'true');
+            opportunityCaption.focus();
+        });
+
+        opportunityCaption.addEventListener('input', () => {
+            opportunityCount.textContent = `${opportunityCaption.value.length}/500`;
+        });
+
+        opportunityImage.addEventListener('change', () => {
+            const image = opportunityImage.files[0];
+            opportunityMessage.textContent = '';
+            if (!image) return;
+
+            if (!['image/jpeg', 'image/png', 'image/webp'].includes(image.type) || image.size > 2 * 1024 * 1024) {
+                opportunityMessage.textContent = 'Escolha uma imagem JPG, PNG ou WEBP de até 2 MB.';
+                opportunityImage.value = '';
+                if (imagePreviewUrl) URL.revokeObjectURL(imagePreviewUrl);
+                imagePreviewUrl = '';
+                imagePreview.removeAttribute('src');
+                imagePreviewWrap.hidden = true;
+                imageUpload.hidden = false;
+                return;
+            }
+
+            if (imagePreviewUrl) URL.revokeObjectURL(imagePreviewUrl);
+            imagePreviewUrl = URL.createObjectURL(image);
+            imagePreview.src = imagePreviewUrl;
+            imagePreviewWrap.hidden = false;
+            imageUpload.hidden = true;
+        });
+
+        removeImageButton.addEventListener('click', () => {
+            if (imagePreviewUrl) URL.revokeObjectURL(imagePreviewUrl);
+            imagePreviewUrl = '';
+            imagePreview.removeAttribute('src');
+            opportunityImage.value = '';
+            imagePreviewWrap.hidden = true;
+            imageUpload.hidden = false;
+        });
+
+        document.querySelector('#cancel-opportunity').addEventListener('click', () => {
+            opportunityForm.reset();
+            opportunityCount.textContent = '0/500';
+            opportunityMessage.textContent = '';
+            if (imagePreviewUrl) URL.revokeObjectURL(imagePreviewUrl);
+            imagePreviewUrl = '';
+            imagePreview.removeAttribute('src');
+            imagePreviewWrap.hidden = true;
+            imageUpload.hidden = false;
+            opportunityPanel.hidden = true;
+            opportunityButton.setAttribute('aria-expanded', 'false');
+            opportunityButton.focus();
+        });
+
+        opportunityForm.addEventListener('submit', (event) => {
+            event.preventDefault();
+            const caption = opportunityCaption.value.trim();
+            if (!caption) {
+                opportunityCaption.focus();
+                return;
+            }
+
+            const imageFile = opportunityImage.files[0];
+            publishButton.disabled = true;
+
+            const publishOpportunity = (imageData = '') => {
+                try {
+                    const profile = JSON.parse(localStorage.getItem('pallasProfile') || 'null');
+                    const author = profile?.nome?.trim() || 'Empresa';
+                    const posts = JSON.parse(localStorage.getItem('pallasPosts') || '[]');
+                    posts.unshift({
+                        id: `oportunidade-${Date.now()}`,
+                        caption,
+                        category: 'Oportunidade para artistas',
+                        image: imageData,
+                        author,
+                        initial: author.charAt(0).toUpperCase(),
+                        createdAt: new Date().toISOString()
+                    });
+                    localStorage.setItem('pallasPosts', JSON.stringify(posts));
+                    window.location.href = 'inicial.html';
+                } catch (error) {
+                    opportunityMessage.textContent = 'Não foi possível publicar a oportunidade. Tente novamente ou escolha uma imagem menor.';
+                    publishButton.disabled = false;
+                    console.error('Erro ao publicar oportunidade:', error);
+                }
+            };
+
+            if (!imageFile) {
+                publishOpportunity();
+                return;
+            }
+
+            const reader = new FileReader();
+            reader.addEventListener('load', () => {
+                if (typeof reader.result !== 'string') {
+                    opportunityMessage.textContent = 'Não foi possível carregar a imagem. Selecione outro arquivo.';
+                    publishButton.disabled = false;
+                    return;
+                }
+                publishOpportunity(reader.result);
+            });
+            reader.addEventListener('error', () => {
+                opportunityMessage.textContent = 'Não foi possível carregar a imagem. Selecione outro arquivo.';
+                publishButton.disabled = false;
+            });
+            try {
+                reader.readAsDataURL(imageFile);
+            } catch (error) {
+                opportunityMessage.textContent = 'Não foi possível carregar a imagem. Selecione outro arquivo.';
+                publishButton.disabled = false;
+                console.error('Erro ao carregar imagem da oportunidade:', error);
+            }
+        });
     </script>
 </body>
 </html>
-
 

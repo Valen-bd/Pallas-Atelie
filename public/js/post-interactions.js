@@ -122,13 +122,26 @@
             likeButton.setAttribute('aria-pressed', savedData.liked);
             likeCount.textContent = savedData.likes;
             commentCount.textContent = savedData.comments.length;
-            comments.replaceChildren(...savedData.comments.map((comment) => {
+            comments.replaceChildren(...savedData.comments.map((comment, index) => {
                 const item = document.createElement('li');
                 const author = document.createElement('strong');
                 const text = document.createElement('span');
+                const deleteButton = document.createElement('button');
                 author.textContent = 'Você';
                 text.textContent = comment;
-                item.append(author, text);
+                deleteButton.className = 'comment-delete-button';
+                deleteButton.type = 'button';
+                deleteButton.setAttribute('aria-label', `Apagar comentário: ${comment}`);
+                deleteButton.title = 'Apagar comentário';
+                const deleteIcon = document.createElement('i');
+                deleteIcon.className = 'bi bi-trash';
+                deleteIcon.setAttribute('aria-hidden', 'true');
+                deleteButton.append(deleteIcon);
+                deleteButton.addEventListener('click', () => {
+                    savedData.comments.splice(index, 1);
+                    updatePost();
+                });
+                item.append(author, text, deleteButton);
                 return item;
             }));
             localStorage.setItem(storageKey, JSON.stringify(savedData));

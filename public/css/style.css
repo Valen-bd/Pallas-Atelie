@@ -1507,9 +1507,27 @@ body {
 
         .comments-list li {
             display: flex;
+            align-items: center;
             gap: 0.45rem;
             color: #475569;
             font-size: 0.9rem;
+        }
+
+        .comment-delete-button {
+            flex: 0 0 auto;
+            margin-left: auto;
+            padding: 0.25rem 0.4rem;
+            border: 0;
+            border-radius: 8px;
+            background: transparent;
+            color: #94a3b8;
+            cursor: pointer;
+        }
+
+        .comment-delete-button:hover,
+        .comment-delete-button:focus-visible {
+            background: #fff1f2;
+            color: #e11d48;
         }
 
         .comments-list strong {
@@ -1541,6 +1559,18 @@ body {
         .suggestion {
             justify-content: flex-start;
             padding-top: 0.2rem;
+        }
+
+        .suggestion-link {
+            color: inherit;
+            text-decoration: none;
+            border-radius: 12px;
+            padding: 0.35rem;
+            margin: 0 -0.35rem;
+        }
+
+        .suggestion-link:hover {
+            background: rgba(102, 126, 234, 0.08);
         }
 
         .perfil-container {
@@ -1881,6 +1911,331 @@ body {
             height: 300px;
         }
 
+        .panel-card ul a {
+            color: inherit;
+            text-decoration: none;
+        }
+
+        .panel-card ul a:hover {
+            color: #414cd0;
+        }
+
+        .discover-container {
+            width: min(100% - 2rem, 1200px);
+            margin: 1.5rem auto 4rem;
+        }
+
+        .discover-back {
+            display: inline-flex;
+            align-items: center;
+            gap: 0.45rem;
+            color: #414cd0;
+            font-weight: 600;
+            text-decoration: none;
+            margin-bottom: 1.5rem;
+        }
+
+        .discover-heading {
+            padding: 2.5rem;
+            border: 1px solid rgba(255, 255, 255, 0.7);
+            border-radius: 28px;
+            background: linear-gradient(120deg, rgba(255, 255, 255, 0.96), rgba(238, 242, 255, 0.94));
+            box-shadow: 0 16px 40px rgba(15, 23, 42, 0.1);
+        }
+
+        .discover-eyebrow {
+            display: inline-flex;
+            align-items: center;
+            gap: 0.45rem;
+            color: #414cd0;
+            font-size: 0.9rem;
+            font-weight: 700;
+            text-transform: uppercase;
+            letter-spacing: 0.08em;
+        }
+
+        .discover-heading h1 {
+            margin: 0.65rem 0;
+            color: #14213d;
+            font-size: clamp(2rem, 4vw, 3rem);
+        }
+
+        .discover-heading p {
+            max-width: 660px;
+            color: #526078;
+            font-size: 1.05rem;
+            line-height: 1.65;
+        }
+
+        .discover-controls {
+            display: flex;
+            align-items: center;
+            justify-content: space-between;
+            gap: 1rem;
+            margin: 1.6rem 0 1rem;
+        }
+
+        .discover-filters {
+            display: flex;
+            flex-wrap: wrap;
+            gap: 0.55rem;
+        }
+
+        .discover-filter {
+            border: 1px solid rgba(65, 76, 208, 0.2);
+            border-radius: 999px;
+            padding: 0.65rem 1.1rem;
+            background: rgba(255, 255, 255, 0.9);
+            color: #475569;
+            font: inherit;
+            font-weight: 600;
+            cursor: pointer;
+            transition: background 0.2s ease, color 0.2s ease, transform 0.2s ease;
+        }
+
+        .discover-filter:hover {
+            transform: translateY(-1px);
+        }
+
+        .discover-filter.is-active {
+            border-color: #414cd0;
+            background: #414cd0;
+            color: white;
+        }
+
+        .discover-count {
+            color: #64748b;
+            white-space: nowrap;
+        }
+
+        .discover-count strong {
+            color: #14213d;
+        }
+
+        .discover-grid {
+            display: grid;
+            grid-template-columns: repeat(3, minmax(0, 1fr));
+            gap: 1rem;
+        }
+
+        .discover-card {
+            min-width: 0;
+            padding: 1.35rem;
+            border: 1px solid rgba(148, 163, 184, 0.22);
+            border-radius: 22px;
+            background: rgba(255, 255, 255, 0.96);
+            box-shadow: 0 12px 32px rgba(15, 23, 42, 0.09);
+            transition: transform 0.2s ease, box-shadow 0.2s ease;
+        }
+
+        .discover-card:hover {
+            transform: translateY(-3px);
+            box-shadow: 0 18px 38px rgba(15, 23, 42, 0.13);
+        }
+
+        .discover-card[hidden] {
+            display: none;
+        }
+
+        .discover-card-top {
+            display: flex;
+            align-items: flex-start;
+            justify-content: space-between;
+            gap: 0.7rem;
+            margin-bottom: 1.1rem;
+        }
+
+        .discover-avatar {
+            width: 58px;
+            height: 58px;
+            font-size: 1rem;
+        }
+
+        .avatar-coral {
+            background: linear-gradient(135deg, #fb7185, #e11d48);
+        }
+
+        .avatar-blue {
+            background: linear-gradient(135deg, #60a5fa, #2563eb);
+        }
+
+        .avatar-green {
+            background: linear-gradient(135deg, #34d399, #059669);
+        }
+
+        .avatar-violet {
+            background: linear-gradient(135deg, #a78bfa, #7c3aed);
+        }
+
+        .avatar-gold {
+            background: linear-gradient(135deg, #fbbf24, #d97706);
+        }
+
+        .avatar-pink {
+            background: linear-gradient(135deg, #f472b6, #db2777);
+        }
+
+        .discover-type {
+            display: inline-flex;
+            align-items: center;
+            gap: 0.35rem;
+            padding: 0.35rem 0.65rem;
+            border-radius: 999px;
+            background: #eef2ff;
+            color: #414cd0;
+            font-size: 0.8rem;
+            font-weight: 700;
+        }
+
+        .discover-card h2 {
+            color: #14213d;
+            font-size: 1.2rem;
+        }
+
+        .discover-handle {
+            margin-top: 0.2rem;
+            color: #7c86a0;
+            font-size: 0.9rem;
+        }
+
+        .discover-bio {
+            min-height: 3.2rem;
+            margin-top: 0.8rem;
+            color: #475569;
+            line-height: 1.55;
+        }
+
+        .discover-tags {
+            display: flex;
+            flex-wrap: wrap;
+            gap: 0.45rem;
+            margin-top: 1rem;
+        }
+
+        .discover-tags span {
+            padding: 0.35rem 0.6rem;
+            border-radius: 8px;
+            background: #f1f5f9;
+            color: #526078;
+            font-size: 0.78rem;
+        }
+
+        .discover-location {
+            display: flex;
+            align-items: center;
+            gap: 0.4rem;
+            margin-top: 1rem;
+            color: #64748b;
+            font-size: 0.88rem;
+        }
+
+        .discover-profile-link {
+            display: inline-flex;
+            align-items: center;
+            gap: 0.4rem;
+            margin-top: 1rem;
+            color: #414cd0;
+            font-weight: 700;
+            text-decoration: none;
+        }
+
+        .discover-profile-link:hover {
+            color: #2936b4;
+        }
+
+        .public-profile-page .perfil-card {
+            padding-top: 1.2rem;
+        }
+
+        .public-profile-page .perfil-feed-panel > img {
+            width: 100%;
+            max-height: 340px;
+            object-fit: cover;
+            border-radius: 14px;
+        }
+
+        .public-profile-page .public-post-caption {
+            color: #475569;
+            line-height: 1.6;
+        }
+
+        .public-profile-page .perfil-actions {
+            justify-content: flex-end;
+        }
+
+        .public-profile-page .perfil-actions[hidden] {
+            display: none;
+        }
+
+        .public-profile-error {
+            max-width: 760px;
+            margin: 4rem auto;
+            padding: 2rem;
+            border-radius: 20px;
+            background: rgba(255, 255, 255, 0.96);
+            color: #475569;
+            text-align: center;
+        }
+
+        .public-profile-error h1 {
+            margin-bottom: 0.6rem;
+            color: #14213d;
+        }
+
+        .public-profile-error a {
+            display: inline-block;
+            margin-top: 1rem;
+            color: #414cd0;
+            font-weight: 700;
+        }
+
+        .discover-empty {
+            margin-top: 1rem;
+            padding: 2rem;
+            border-radius: 18px;
+            background: rgba(255, 255, 255, 0.94);
+            color: #64748b;
+            text-align: center;
+        }
+
+        .discover-page .social-search input {
+            width: min(32vw, 320px);
+        }
+
+        @media (max-width: 900px) {
+            .discover-grid {
+                grid-template-columns: repeat(2, minmax(0, 1fr));
+            }
+        }
+
+        @media (max-width: 600px) {
+            .discover-container {
+                width: min(100% - 1.25rem, 1200px);
+                margin-top: 1rem;
+            }
+
+            .discover-heading {
+                padding: 1.5rem;
+            }
+
+            .discover-controls {
+                align-items: flex-start;
+                flex-direction: column;
+            }
+
+            .discover-grid {
+                grid-template-columns: 1fr;
+            }
+
+            .discover-bio {
+                min-height: 0;
+            }
+
+            .discover-page .social-search input {
+                width: 100%;
+            }
+        }
+
         .home-system-page {
             background-image: url("../images/pallas3.png");
             background-size: cover;
@@ -1969,6 +2324,227 @@ body {
             gap: 1rem;
             flex-wrap: wrap;
             margin-top: 1.3rem;
+        }
+
+        .partnership-form-panel {
+            max-width: 680px;
+            margin-top: 1.4rem;
+            padding: 1.25rem;
+            border: 1px solid rgba(102, 126, 234, 0.2);
+            border-radius: 20px;
+            background: rgba(255, 255, 255, 0.96);
+        }
+
+        .partnership-form-panel h2 {
+            color: #14213d;
+            font-size: 1.2rem;
+        }
+
+        .partnership-form-panel > p {
+            margin: 0.4rem 0 1rem;
+            color: #64748b;
+            line-height: 1.5;
+        }
+
+        .partnership-form-panel form {
+            display: flex;
+            flex-direction: column;
+            gap: 0.55rem;
+        }
+
+        .partnership-form-panel label {
+            color: #172b4d;
+            font-weight: 700;
+        }
+
+        .partnership-form-panel textarea {
+            width: 100%;
+            min-height: 130px;
+            padding: 0.8rem 0.9rem;
+            border: 1px solid #d6deeb;
+            border-radius: 12px;
+            color: #334155;
+            font: inherit;
+            line-height: 1.5;
+            resize: vertical;
+        }
+
+        .partnership-form-panel textarea:focus {
+            outline: none;
+            border-color: #667eea;
+            box-shadow: 0 0 0 3px rgba(102, 126, 234, 0.12);
+        }
+
+        .partnership-form-meta,
+        .partnership-form-actions {
+            display: flex;
+            align-items: center;
+            justify-content: space-between;
+            gap: 0.8rem;
+        }
+
+        .partnership-form-meta {
+            min-height: 1.25rem;
+            color: #64748b;
+            font-size: 0.85rem;
+        }
+
+        .partnership-form-meta #partnership-message {
+            color: #b42318;
+        }
+
+        .partnership-form-actions {
+            justify-content: flex-end;
+            margin-top: 0.5rem;
+        }
+
+        .partnership-form-actions .btn {
+            border: 0;
+            cursor: pointer;
+        }
+
+        .partnership-cancel {
+            padding: 0.7rem 1rem;
+            border: 0;
+            border-radius: 999px;
+            background: #e2e8f0;
+            color: #334155;
+            font: inherit;
+            font-weight: 700;
+            cursor: pointer;
+        }
+
+        .partnership-list-section {
+            padding: clamp(1.25rem, 3vw, 2rem);
+            border: 1px solid rgba(148, 163, 184, 0.2);
+            border-radius: 26px;
+            background: rgba(248, 250, 255, 0.96);
+            box-shadow: 0 18px 45px rgba(15, 23, 42, 0.1);
+        }
+
+        .partnership-list-heading {
+            display: flex;
+            align-items: flex-end;
+            justify-content: space-between;
+            gap: 1rem;
+            margin-bottom: 1.3rem;
+        }
+
+        .partnership-list-heading h2 {
+            margin: 0.35rem 0;
+            color: #14213d;
+            font-size: clamp(1.5rem, 3vw, 2rem);
+        }
+
+        .partnership-list-heading p {
+            color: #64748b;
+            line-height: 1.5;
+        }
+
+        .partnership-community-link {
+            display: inline-flex;
+            align-items: center;
+            gap: 0.45rem;
+            flex: 0 0 auto;
+            color: #414cd0;
+            font-weight: 700;
+            text-decoration: none;
+        }
+
+        .partnership-community-link:hover {
+            color: #2936b4;
+        }
+
+        .partnership-list {
+            display: grid;
+            grid-template-columns: repeat(2, minmax(0, 1fr));
+            gap: 1rem;
+        }
+
+        .partnership-list-card {
+            min-width: 0;
+            padding: 1.1rem;
+            border: 1px solid rgba(148, 163, 184, 0.2);
+            border-radius: 18px;
+            background: white;
+        }
+
+        .partnership-list-card-header,
+        .partnership-list-author {
+            display: flex;
+            align-items: center;
+            gap: 0.7rem;
+        }
+
+        .partnership-list-card-header {
+            justify-content: space-between;
+            margin-bottom: 0.9rem;
+        }
+
+        .partnership-list-author > div:last-child {
+            display: flex;
+            flex-direction: column;
+            gap: 0.15rem;
+        }
+
+        .partnership-list-author strong {
+            color: #14213d;
+        }
+
+        .partnership-list-author span {
+            color: #7c86a0;
+            font-size: 0.82rem;
+        }
+
+        .partnership-list-badge {
+            flex: 0 0 auto;
+            padding: 0.35rem 0.65rem;
+            border-radius: 999px;
+            background: #eef2ff;
+            color: #414cd0;
+            font-size: 0.78rem;
+            font-weight: 700;
+        }
+
+        .partnership-list-caption {
+            color: #475569;
+            line-height: 1.6;
+            overflow-wrap: anywhere;
+        }
+
+        .partnership-list-image {
+            display: block;
+            width: 100%;
+            max-height: 360px;
+            margin-top: 0.9rem;
+            border-radius: 12px;
+            background: #f1f5f9;
+            object-fit: contain;
+        }
+
+        .partnership-list-empty,
+        .partnership-list-status {
+            padding: 1.5rem;
+            border-radius: 16px;
+            background: white;
+            color: #64748b;
+            line-height: 1.6;
+            text-align: center;
+        }
+
+        .partnership-list-status {
+            color: #b42318;
+        }
+
+        @media (max-width: 700px) {
+            .partnership-list-heading {
+                align-items: flex-start;
+                flex-direction: column;
+            }
+
+            .partnership-list {
+                grid-template-columns: 1fr;
+            }
         }
 
         .jobs-highlight-card {
