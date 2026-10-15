@@ -1,0 +1,165 @@
+================================================================================
+           PALLAS ATELIÊ - GUIA DE INSTALAÇÃO E EXECUÇÃO LOCAL DO SISTEMA
+================================================================================
+
+Este guia descreve o passo a passo completo para configurar, inicializar,
+popular o banco de dados MongoDB e colocar o backend da plataforma no ar.
+
+--------------------------------------------------------------------------------
+1. PRÉ-REQUISITOS DO SISTEMA
+--------------------------------------------------------------------------------
+Antes de começar, certifique-se de ter instalado no seu computador:
+- Node.js (versão 18.x, 20.x ou superior)
+- npm (gerenciador de pacotes do Node)
+- Uma instância do MongoDB, que pode ser:
+  a) MongoDB Community Server instalado localmente no Windows:
+     https://www.mongodb.com/try/download/community
+  b) MongoDB via Docker:
+     docker run -d -p 27017:27017 --name mongo-pallas mongo:latest
+  c) MongoDB Atlas (Cluster Gratuito na Nuvem):
+     https://www.mongodb.com/cloud/atlas
+
+Para verificar se o Node e o npm estão instalados, abra o terminal e execute:
+   node -v
+   npm -v
+
+--------------------------------------------------------------------------------
+2. ESTRUTURA DO BANCO DE DADOS IMPLEMENTADA
+--------------------------------------------------------------------------------
+O banco de dados foi modelado e configurado com 6 coleções principais:
+
+1. 'usuarios':
+   - Autenticação e credenciais (login, email, hash de senha, perfil exclusivo).
+   - Perfis: 'artista' ou 'empresa'.
+
+2. 'artistas':
+   - Perfil de artistas (CPF, nome, contato, links).
+   - 'tipo_arte': tags de modalidades artísticas.
+   - 'endereco': embutido com suporte a coordenadas GeoJSON (Point).
+   - 'portfolios': múltiplos portfólios temáticos independentes com URLs de imagens.
+
+3. 'empresas':
+   - Perfil empresarial (CNPJ, razão social, nome fantasia, responsável, contato).
+   - 'tipo_arte': segmentos ou interesses artísticos da empresa.
+   - 'endereco' e 'portfolios': embutidos (idênticos a artistas).
+
+4. 'oportunidades':
+   - Fusão de vagas e oportunidades corporativas (cargo, função, salário, horário).
+   - Vinculadas a uma empresa criadora ('empresa_id').
+
+5. 'candidaturas' [Melhoria 1]:
+   - Fluxo do processo seletivo conectando artistas a oportunidades.
+   - Índice composto único impedindo candidaturas duplicadas do mesmo artista.
+
+6. 'parcerias':
+   - Contratos e projetos consolidados.
+   - Relação N:N com múltiplos artistas ('artistas_ids') e vinculação opcional a
+     uma empresa e/ou oportunidade.
+
+--------------------------------------------------------------------------------
+3. CONFIGURAÇÃO DAS VARIÁVEIS DE AMBIENTE (.env)
+--------------------------------------------------------------------------------
+Navegue até a pasta 'backend' e localize ou crie o arquivo '.env':
+
+Exemplo para MongoDB Local no Windows (porta padrão 27017):
+   PORT=3000
+   MONGO_URI=mongodb://127.0.0.1:27017/pallas_atelie
+
+Exemplo para MongoDB Atlas (na nuvem):
+   PORT=3000
+   MONGO_URI=mongodb+srv://<USUARIO>:<SENHA>@<CLUSTER>.mongodb.net/pallas_atelie?retryWrites=true&w=majority
+
+DICA: Se for rodar localmente no Windows e tiver o MongoDB Community instalado,
+certifique-se de que o serviço do Windows está iniciado:
+   No PowerShell como Administrador:
+   net start MongoDB
+
+--------------------------------------------------------------------------------
+4. COMANDOS PASSO A PASSO PARA EXECUTAR O SISTEMA
+--------------------------------------------------------------------------------
+
+Passo 1: Entrar na pasta do backend
+------------------------------------
+Abra o terminal (PowerShell ou CMD) na pasta raiz do projeto e entre em backend:
+   cd backend
+
+Passo 2: Instalar as dependências do projeto
+--------------------------------------------
+Execute o comando abaixo para instalar o Express, Mongoose, Dotenv e Cors:
+   npm install
+
+Passo 3: Rodar a Bateria de Testes dos Modelos
+----------------------------------------------
+Para validar se todos os modelos Mongoose, regras de tipos, campos obrigatórios,
+formatos de CPF/CNPJ/CEP e subdocumentos GeoJSON estão íntegros:
+   npm test
+   (Ou: node tests/model_validation.test.js)
+
+Passo 4: Criar o Banco e Coleções com Schema Validation no mongosh (Opcional)
+-----------------------------------------------------------------------------
+Caso deseje aplicar as regras estritas de validação $jsonSchema no MongoDB nativo:
+   mongosh "mongodb://127.0.0.1:27017" < db/init_database.js
+
+Passo 5: Popular o Banco de Dados com a SEED
+--------------------------------------------
+Para cadastrar automaticamente os dados iniciais de teste (2 artistas completos
+com portfólios, 2 empresas, 3 oportunidades, 2 candidaturas e 2 parcerias):
+   npm run seed
+   (Ou: node src/seeds/seed.js)
+
+Passo 6: Iniciar o Servidor Backend
+-----------------------------------
+Modo normal de produção:
+   npm start
+   (Ou: node index.js)
+
+Modo de desenvolvimento (com reinicialização automática via Nodemon):
+   npm run dev
+
+--------------------------------------------------------------------------------
+5. ACESSANDO O SISTEMA NO NAVEGADOR
+--------------------------------------------------------------------------------
+Com o servidor rodando, abra o seu navegador e acesse as rotas disponíveis:
+
+- Página Inicial / Home:
+  http://localhost:3000/
+  http://localhost:3000/home
+
+- Página de Seleção de Cadastro:
+  http://localhost:3000/cadastro
+
+- Cadastro de Artista:
+  http://localhost:3000/cadastro/artista
+
+- Cadastro de Empresa:
+  http://localhost:3000/cadastro/empresa
+
+- Sobre a Plataforma:
+  http://localhost:3000/sobre
+
+- Contato:
+  http://localhost:3000/contato
+
+--------------------------------------------------------------------------------
+6. RESOLUÇÃO DE PROBLEMAS COMUNS (TROUBLESHOOTING)
+--------------------------------------------------------------------------------
+Q1: Recebi o erro "ECONNREFUSED 127.0.0.1:27017" ao rodar a seed ou o servidor.
+R: O serviço do MongoDB local não está ativo.
+   - Abra o menu Iniciar do Windows, digite "Serviços", procure por "MongoDB Server"
+     e clique em "Iniciar".
+   - Ou abra o PowerShell como Administrador e execute: net start MongoDB.
+
+Q2: Recebi o erro "querySrv ENOTFOUND ... mongodb.net".
+R: Esse erro ocorre se a URI no arquivo .env apontar para um cluster Atlas
+   inacessível ou inexistente, ou se a máquina estiver sem acesso à internet/DNS.
+   Para testar localmente, altere a variável MONGO_URI no .env para:
+   MONGO_URI=mongodb://127.0.0.1:27017/pallas_atelie
+
+Q3: Como limpar o banco de dados e recomeçar?
+R: Basta executar novamente o comando de seed:
+   npm run seed
+   Ele automaticamente limpa todas as coleções e insere a base de dados consistente.
+
+================================================================================
+Projeto Pallas Ateliê - Desenvolvido com Node.js, Express e MongoDB / Mongoose.
+================================================================================

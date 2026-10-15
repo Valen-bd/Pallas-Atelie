@@ -1,0 +1,107 @@
+<!DOCTYPE html>
+<html lang="pt-br">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Entrar | Pallas Ateliê</title>
+    <link rel="shortcut icon" type="image/png" href="images/PA-TCC logo.png">
+    <link rel="stylesheet" href="./css/style.css">
+</head>
+<body class="entrar-page">
+    <header>
+        <nav class="navbar">
+            <div class="nav-container">
+                <div class="logo">
+                    <img src="images/pa1.png" id="logimagem" alt="Logo Pallas Ateliê">
+                </div>
+                <ul class="nav-menu">
+                    <li><a href="index.html" class="nav-link">Início</a></li>
+                    <li><a href="sobre.html" class="nav-link">Sobre</a></li>
+                    <li><a href="contato.html" class="nav-link">Contato</a></li>
+                </ul>
+            </div>
+        </nav>
+    </header>
+
+    <main class="container">
+        <div class="frase">
+            Bem-vindo de volta!
+            <span class="frase-destaque">Entre e continue compartilhando suas artes.</span>
+        </div>
+        <div class="divider"></div>
+
+        <div id="mensagem-alerta" style="display:none; padding: 12px; margin-bottom: 16px; border-radius: 8px; font-weight: 500; font-size: 14px; text-align: center;"></div>
+
+        <form class="register-form" id="form-login">
+            <label class="form-label" for="email">E-mail ou Login</label>
+            <input class="form-input" id="email" type="text" placeholder="seu@email.com ou seu_login" required>
+
+            <label class="form-label" for="senha">Senha</label>
+            <input class="form-input" id="senha" type="password" placeholder="********" required>
+
+            <button class="btn btn-cadastrar register-submit" id="btn-login" type="submit">Entrar</button>
+        </form>
+    </main>
+    <script>
+        const form = document.getElementById('form-login');
+        const alertBox = document.getElementById('mensagem-alerta');
+        const submitBtn = document.getElementById('btn-login');
+
+        function exibirAlerta(msg, tipo = 'erro') {
+            alertBox.style.display = 'block';
+            alertBox.innerText = msg;
+            if (tipo === 'erro') {
+                alertBox.style.background = '#ffebee';
+                alertBox.style.color = '#c62828';
+                alertBox.style.border = '1px solid #ef9a9a';
+            } else {
+                alertBox.style.background = '#e8f5e9';
+                alertBox.style.color = '#2e7d32';
+                alertBox.style.border = '1px solid #a5d6a7';
+            }
+        }
+
+        form.addEventListener('submit', async function(e) {
+            e.preventDefault();
+            submitBtn.disabled = true;
+            submitBtn.innerText = 'Entrando...';
+
+            const payload = {
+                email: document.getElementById('email').value,
+                senha: document.getElementById('senha').value
+            };
+
+            try {
+                const response = await fetch('/api/auth/login', {
+                    method: 'POST',
+                    headers: { 'Content-Type': 'application/json' },
+                    body: JSON.stringify(payload)
+                });
+
+                const data = await response.json();
+
+                if (!response.ok || !data.sucesso) {
+                    exibirAlerta(data.mensagem || 'Credenciais inválidas.');
+                    submitBtn.disabled = false;
+                    submitBtn.innerText = 'Entrar';
+                    return;
+                }
+
+                exibirAlerta('Login efetuado com sucesso!', 'sucesso');
+                localStorage.setItem('pallasUserType', data.dados.tipo_perfil);
+                localStorage.setItem('pallasUser', JSON.stringify(data.dados));
+
+                setTimeout(() => {
+                    window.location.href = 'inicial.html';
+                }, 1000);
+            } catch (err) {
+                exibirAlerta('Erro de conexão com o servidor: ' + err.message);
+                submitBtn.disabled = false;
+                submitBtn.innerText = 'Entrar';
+            }
+        });
+    </script>
+</body>
+</html>
+
+

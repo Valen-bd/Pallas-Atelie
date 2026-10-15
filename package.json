@@ -1,16 +1,15 @@
 {
-  "dependencies": {
-    "express": "^5.2.1"
-  },
-  "name": "tccnew",
+  "name": "pallas-atelie",
   "version": "1.0.0",
-  "description": "",
-  "main": "index.js",
+  "description": "Plataforma Pallas Ateliê",
   "scripts": {
-    "test": "echo \"Error: no test specified\" && exit 1"
+    "start": "npm run start --prefix backend",
+    "dev": "npm run dev --prefix backend",
+    "seed": "npm run seed --prefix backend",
+    "test": "npm run test --prefix backend",
+    "install:backend": "npm install --prefix backend"
   },
   "keywords": [],
   "author": "",
-  "license": "ISC",
-  "type": "commonjs"
+  "license": "ISC"
 }

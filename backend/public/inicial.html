@@ -1,4 +1,4 @@
-﻿<!DOCTYPE html>
+<!DOCTYPE html>
 <html lang="pt-br">
 <head>
     <meta charset="UTF-8">
@@ -166,6 +166,33 @@
     <script>
         const header = document.querySelector('.social-header');
         const userType = localStorage.getItem('pallasUserType');
+        const userDataStr = localStorage.getItem('pallasUser');
+
+        if (userDataStr) {
+            try {
+                const user = JSON.parse(userDataStr);
+                const displayName = user.nome_artistico || user.nome || user.nome_fantasia || user.login || 'Usuário';
+                const displayLogin = user.login || 'usuario';
+                const initial = displayName.charAt(0).toUpperCase();
+
+                // Atualizar Mini Perfil no Header
+                const miniProfileSpan = document.querySelector('.profile-mini span');
+                const miniProfileAvatar = document.querySelector('.profile-mini .avatar');
+                if (miniProfileSpan) miniProfileSpan.innerText = displayName;
+                if (miniProfileAvatar) miniProfileAvatar.innerText = initial;
+
+                // Atualizar Card de Perfil na Sidebar
+                const profileTitle = document.querySelector('.social-profile h3');
+                const profileHandle = document.querySelector('.social-profile p');
+                const profileAvatar = document.querySelector('.social-profile .avatar');
+                if (profileTitle) profileTitle.innerText = displayName;
+                if (profileHandle) profileHandle.innerText = '@' + displayLogin;
+                if (profileAvatar) profileAvatar.innerText = initial;
+            } catch (e) {
+                console.error('Erro ao ler usuário logado:', e);
+            }
+        }
+
         if (userType === 'empresa') {
             const artistaIcon = document.querySelector('.propostas-artista-icon');
             if (artistaIcon) artistaIcon.style.display = 'none';

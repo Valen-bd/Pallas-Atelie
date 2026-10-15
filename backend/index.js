@@ -1,13 +1,42 @@
+require('dotenv').config();
 const express = require('express');
 const path = require('path');
+const mongoose = require('mongoose');
+const connectDB = require('./src/config/database');
+
 const app = express();
-const port = 3000;
+const port = process.env.PORT || 3000;
+
+// Conectar ao MongoDB
+connectDB();
 
 // Caminho para a pasta public com os arquivos HTML
 const publicPath = path.join(__dirname, 'public');
 
-// Servir arquivos estáticos (CSS, imagens, etc)
+// Middlewares para JSON e arquivos estáticos
+app.use(express.json());
+app.use(express.urlencoded({ extended: true }));
 app.use(express.static(publicPath));
+
+// Rotas da API conectadas ao MongoDB
+app.use('/api/auth', require('./src/routes/authRoutes'));
+app.use('/api', require('./src/routes/perfilRoutes'));
+
+// Endpoint para verificar status da API e conexão do banco
+app.get('/api/status', (req, res) => {
+  const dbStatusMap = {
+    0: 'desconectado',
+    1: 'conectado',
+    2: 'conectando',
+    3: 'desconectando'
+  };
+  res.json({
+    sistema: 'Pallas Ateliê Backend',
+    status: 'online',
+    banco_mongodb: dbStatusMap[mongoose.connection.readyState] || 'desconhecido',
+    timestamp: new Date()
+  });
+});
 
 // Rota para a página inicial
 app.get('/', (req, res) => {

@@ -1,0 +1,154 @@
+<!DOCTYPE html>
+<html lang="pt-br">
+<head>
+    <meta charset="UTF-8">
+    <meta http-equiv="X-UA-Compatible" content="IE=edge">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Cadastrar Artista - Pallas Ateliê</title>
+    <link rel="shortcut icon" type="image/png" href="images/PA-TCC logo.png">
+    <link rel="stylesheet" href="./css/style.css">
+</head>
+<body class="register-page">
+    <header>
+        <nav class="navbar">
+            <div class="nav-container">
+                <div class="logo">
+                    <img src="images/pa1.png" id="logimagem" alt="Logo">
+                </div>
+                <ul class="nav-menu">
+                    <li><a href="index.html" class="nav-link" data-page="home">Início</a></li>
+                    <li><a href="sobre.html" class="nav-link" data-page="about">Sobre</a></li>
+                    <li><a href="contato.html" class="nav-link" data-page="contact">Contato</a></li>
+                </ul>
+            </div>
+        </nav>
+    </header>
+
+    <main>
+        <div class="container">
+            <div class="frase">Cadastro de Artista</div>
+            <div class="divider"></div>
+
+            <div id="mensagem-alerta" style="display:none; padding: 12px; margin-bottom: 16px; border-radius: 8px; font-weight: 500; font-size: 14px; text-align: center;"></div>
+
+            <form class="register-form" id="form-artista">
+                <label class="form-label" for="nome">Nome </label>
+                <input id="nome" name="nome" type="text" class="form-input" placeholder="Digite seu nome" required>
+
+                <label class="form-label" for="nome-artistico">Nome Artístico</label>
+                <input id="nome-artistico" name="nome-artistico" type="text" class="form-input" placeholder="Digite seu nome artístico" required>
+
+                <label class="form-label" for="email">E-mail</label>
+                <input id="email" name="email" type="email" class="form-input" placeholder="Digite seu e-mail" required>
+
+                <label class="form-label" for="pais">País</label>
+                <input id="pais" name="pais" type="text" class="form-input" placeholder="Ex: Brasil" value="Brasil" required>
+
+                <label class="form-label" for="estado">Estado</label>
+                <input id="estado" name="estado" type="text" class="form-input" placeholder="Ex: Santa Catarina ou SC" required>
+
+                <label class="form-label" for="cidade">Cidade</label>
+                <input id="cidade" name="cidade" type="text" class="form-input" placeholder="Ex: Joinville" required>
+
+                <label class="form-label" for="cpf">CPF</label>
+                <input id="cpf" name="cpf" type="text" class="form-input" placeholder="000.000.000-00" required>
+
+                <label class="form-label" for="fone">Fone</label>
+                <input id="fone" name="fone" type="text" class="form-input" placeholder="(00) 00000-0000" required>
+
+                <label class="form-label" for="tipo">Tipo de arte</label>
+                <input id="tipo" name="tipo" type="text" class="form-input" placeholder="Ex: pintura, escultura, aquarela" required>
+
+                <label class="form-label" for="senha">Senha</label>
+                <input id="senha" name="senha" type="password" class="form-input" placeholder="Crie uma senha" required>
+
+                <label class="form-label" for="confirmar-senha">Confirmar senha</label>
+                <input id="confirmar-senha" name="confirmar-senha" type="password" class="form-input" placeholder="Repita a senha" required>
+
+                <button type="submit" id="btn-submit" class="btn btn-cadastrar register-submit">Cadastrar-se como Artista</button>
+            </form>
+
+            <div class="divider"></div>
+            <a href="cadastrar.html" class="btn btn-entrar back-button">Voltar</a>
+        </div>
+    </main>
+    <script>
+        const form = document.getElementById('form-artista');
+        const alertBox = document.getElementById('mensagem-alerta');
+        const submitBtn = document.getElementById('btn-submit');
+
+        function exibirAlerta(msg, tipo = 'erro') {
+            alertBox.style.display = 'block';
+            alertBox.innerText = msg;
+            if (tipo === 'erro') {
+                alertBox.style.background = '#ffebee';
+                alertBox.style.color = '#c62828';
+                alertBox.style.border = '1px solid #ef9a9a';
+            } else {
+                alertBox.style.background = '#e8f5e9';
+                alertBox.style.color = '#2e7d32';
+                alertBox.style.border = '1px solid #a5d6a7';
+            }
+        }
+
+        form.addEventListener('submit', async function(e) {
+            e.preventDefault();
+
+            const senha = document.getElementById('senha').value;
+            const confirmarSenha = document.getElementById('confirmar-senha').value;
+
+            if (senha !== confirmarSenha) {
+                exibirAlerta('As senhas não coincidem!');
+                return;
+            }
+
+            submitBtn.disabled = true;
+            submitBtn.innerText = 'Cadastrando no banco...';
+
+            const payload = {
+                nome: document.getElementById('nome').value,
+                nome_artistico: document.getElementById('nome-artistico').value,
+                email: document.getElementById('email').value,
+                pais: document.getElementById('pais').value,
+                estado: document.getElementById('estado').value,
+                cidade: document.getElementById('cidade').value,
+                cpf: document.getElementById('cpf').value,
+                fone: document.getElementById('fone').value,
+                tipo: document.getElementById('tipo').value,
+                senha: senha
+            };
+
+            try {
+                const response = await fetch('/api/auth/cadastrar-artista', {
+                    method: 'POST',
+                    headers: { 'Content-Type': 'application/json' },
+                    body: JSON.stringify(payload)
+                });
+
+                const data = await response.json();
+
+                if (!response.ok || !data.sucesso) {
+                    exibirAlerta(data.mensagem || 'Erro ao realizar cadastro.');
+                    submitBtn.disabled = false;
+                    submitBtn.innerText = 'Cadastrar-se como Artista';
+                    return;
+                }
+
+                exibirAlerta('Conta criada com sucesso no MongoDB! Redirecionando...', 'sucesso');
+                localStorage.setItem('pallasUserType', 'artista');
+                localStorage.setItem('pallasUser', JSON.stringify(data.dados));
+
+                setTimeout(() => {
+                    window.location.href = 'inicial.html';
+                }, 1200);
+            } catch (err) {
+                exibirAlerta('Erro de conexão com o servidor: ' + err.message);
+                submitBtn.disabled = false;
+                submitBtn.innerText = 'Cadastrar-se como Artista';
+            }
+        });
+    </script>
+</body>
+</html>
+
+
