@@ -63,11 +63,19 @@ Localize ou crie o arquivo '.env' dentro da pasta 'backend':
 
 Exemplo para MongoDB Local no Windows (porta padrão 27017):
    PORT=3000
-   MONGO_URI=mongodb://127.0.0.1:27017/pallas_atelie
+   DB_HOST=127.0.0.1
+   DB_PORT=27017
+   DB_NAME=pallas_atelie
+   # Ou direto via URI: MONGO_URI=mongodb://127.0.0.1:27017/pallas_atelie
 
-Exemplo para MongoDB Atlas (na nuvem):
+Exemplo para MongoDB Atlas na nuvem (com campos dedicados para usuário e senha):
    PORT=3000
-   MONGO_URI=mongodb+srv://<USUARIO>:<SENHA>@<CLUSTER>.mongodb.net/pallas_atelie?retryWrites=true&w=majority
+   DB_USER=<USUARIO>
+   DB_PASSWORD=<SENHA>
+   DB_HOST=<CLUSTER>.mongodb.net
+   DB_NAME=pallas_atelie
+   DB_OPTIONS=retryWrites=true&w=majority
+   # Ou direto via URI: MONGO_URI=mongodb+srv://<USUARIO>:<SENHA>@<CLUSTER>.mongodb.net/pallas_atelie?retryWrites=true&w=majority
 
 DICA: Se for rodar localmente no Windows e tiver o MongoDB Community instalado,
 certifique-se de que o serviço do Windows está iniciado:
