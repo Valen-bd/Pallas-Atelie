@@ -47,6 +47,27 @@
         const alertBox = document.getElementById('mensagem-alerta');
         const submitBtn = document.getElementById('btn-login');
 
+        const API_BASE_URL = (() => {
+            const isStaticPreview = ['5500', '5501', '8080'].includes(window.location.port) || window.location.protocol === 'file:';
+            return isStaticPreview ? 'http://localhost:3000' : window.location.origin;
+        })();
+
+        async function apiRequest(url, options = {}) {
+            const response = await fetch(`${API_BASE_URL}${url}`, options);
+            const text = await response.text();
+
+            let data = {};
+            if (text) {
+                try {
+                    data = JSON.parse(text);
+                } catch (error) {
+                    throw new Error('A API respondeu com conteúdo inválido. Verifique se o backend está rodando em http://localhost:3000');
+                }
+            }
+
+            return { response, data };
+        }
+
         function exibirAlerta(msg, tipo = 'erro') {
             alertBox.style.display = 'block';
             alertBox.innerText = msg;
@@ -72,13 +93,11 @@
             };
 
             try {
-                const response = await fetch('/api/auth/login', {
+                const { response, data } = await apiRequest('/api/auth/login', {
                     method: 'POST',
                     headers: { 'Content-Type': 'application/json' },
                     body: JSON.stringify(payload)
                 });
-
-                const data = await response.json();
 
                 if (!response.ok || !data.sucesso) {
                     exibirAlerta(data.mensagem || 'Credenciais inválidas.');
@@ -88,6 +107,7 @@
                 }
 
                 exibirAlerta('Login efetuado com sucesso!', 'sucesso');
+                localStorage.removeItem('pallasProfile');
                 localStorage.setItem('pallasUserType', data.dados.tipo_perfil);
                 localStorage.setItem('pallasUser', JSON.stringify(data.dados));
 
@@ -103,5 +123,4 @@
     </script>
 </body>
 </html>
-
 

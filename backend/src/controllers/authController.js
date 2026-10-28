@@ -141,6 +141,9 @@ async function cadastrarArtista(req, res) {
         nome: novoArtista.nome,
         nome_artistico: novoArtista.nome_artistico,
         email: novoArtista.email,
+        fone: novoArtista.fone,
+        tipo_arte: novoArtista.tipo_arte,
+        endereco: novoArtista.endereco,
         tipo_perfil: 'artista'
       }
     });
@@ -268,6 +271,9 @@ async function cadastrarEmpresa(req, res) {
         nome_fantasia: novaEmpresa.nome_fantasia,
         razao_social: novaEmpresa.razao_social,
         email: novaEmpresa.email,
+        fone: novaEmpresa.fone,
+        tipo_arte: novaEmpresa.tipo_arte,
+        endereco: novaEmpresa.endereco,
         tipo_perfil: 'empresa'
       }
     });

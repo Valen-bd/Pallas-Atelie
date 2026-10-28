@@ -63,9 +63,21 @@ app.get('/cadastro/artista', (req, res) => {
   res.sendFile(path.join(publicPath, 'cadastrar-artista.html'));
 });
 
+app.get('/cadastrar-artista.html', (req, res) => {
+  res.sendFile(path.join(publicPath, 'cadastrar-artista.html'));
+});
+
 // Rota para cadastro de empresa
 app.get('/cadastro/empresa', (req, res) => {
   res.sendFile(path.join(publicPath, 'cadastrar-empresa.html'));
+});
+
+app.get('/cadastrar-empresa.html', (req, res) => {
+  res.sendFile(path.join(publicPath, 'cadastrar-empresa.html'));
+});
+
+app.get('/entrar.html', (req, res) => {
+  res.sendFile(path.join(publicPath, 'entrar.html'));
 });
 
 // Rota para página sobre

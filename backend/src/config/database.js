@@ -15,6 +15,11 @@ function getMongoURI() {
         MONGO_URI
     } = process.env;
 
+    // Prioridade máxima para MONGO_URI direta se definida
+    if (MONGO_URI && MONGO_URI.trim() !== '') {
+        return MONGO_URI.trim();
+    }
+
     // Caso variáveis individuais estejam configuradas no .env
     if (DB_HOST) {
         const isSrv = DB_HOST.includes('mongodb.net') || DB_HOST.startsWith('cluster');
@@ -26,11 +31,6 @@ function getMongoURI() {
         const query = DB_OPTIONS ? `?${DB_OPTIONS}` : '';
 
         return `${protocol}://${auth}${DB_HOST}${portStr}/${DB_NAME}${query}`;
-    }
-
-    // Fallback para MONGO_URI direta
-    if (MONGO_URI) {
-        return MONGO_URI;
     }
 
     // Fallback local padrão sem autenticação

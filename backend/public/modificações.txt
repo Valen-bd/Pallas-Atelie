@@ -11,3 +11,5 @@ englobar outras maneiras de artes visuais
 tirar fotografia e adicionar ARTES VISUAIS
 
 fazer com que as propostas apareçam na comunidade
+
+SEMPRE abrir no localhost

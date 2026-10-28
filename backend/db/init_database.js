@@ -3,7 +3,7 @@
 // Compatível com MongoDB 6.0+, 7.0+ e 8.0+
 // =============================================================================
 
-use pallas_atelie;
+db = db.getSiblingDB("pallas_atelie");
 
 // 1. Criar Collection: usuarios
 db.createCollection("usuarios", {
