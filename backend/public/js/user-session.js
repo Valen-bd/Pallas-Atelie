@@ -1,112 +1,218 @@
+﻿/**
+ * Gerenciador de Sessão e Atualização Visual do Pallas Ateliê:
+ * Aplica as fotos de perfil, banners e nomes do usuário autenticado
+ * em todas as páginas do sistema.
+ */
 (function () {
     function readStoredJson(key) {
-        const value = localStorage.getItem(key);
-        if (!value) return null;
-
+        const val = localStorage.getItem(key);
+        if (!val) return null;
         try {
-            return JSON.parse(value);
-        } catch (error) {
-            console.error(`Não foi possível ler os dados salvos em ${key}:`, error);
+            return JSON.parse(val);
+        } catch (e) {
             return null;
         }
     }
 
-    function nonPlaceholder(value, placeholder) {
-        return typeof value === 'string' && value.trim() && value.trim() !== placeholder
-            ? value.trim()
-            : '';
-    }
+    function applyUserVisuals() {
+        const user = readStoredJson('pallasUser') || {};
+        const account = user.perfil && typeof user.perfil === 'object' ? user.perfil : user;
+        const profile = readStoredJson('pallasProfile') || {};
 
-    const user = readStoredJson('pallasUser') || {};
-    const account = user.perfil && typeof user.perfil === 'object' ? user.perfil : user;
-    const address = account.endereco || {};
-    const storedProfile = readStoredJson('pallasProfile') || {};
-    const displayName = account.nome_artistico
-        || account.nome_fantasia
-        || user.nome_artistico
-        || user.nome_fantasia
-        || account.nome
-        || user.nome
-        || user.login
-        || 'Usuário';
-    const artTypes = account.tipo_arte || account.area || user.tipo_arte || user.area || '';
-    const normalizedArtTypes = Array.isArray(artTypes) ? artTypes.join(', ') : artTypes;
-    const hasUser = Object.keys(user).length > 0;
-    const profile = {
-        nome: nonPlaceholder(storedProfile.nome, 'Usuário') || displayName,
-        usuario: nonPlaceholder(storedProfile.usuario, '@usuario').replace(/^@/, '') || user.login || account.login || 'usuario',
-        bio: storedProfile.bio || '',
-        pais: nonPlaceholder(storedProfile.pais, '') || address.pais || '',
-        estado: nonPlaceholder(storedProfile.estado, 'São Paulo') || address.uf || '',
-        cidade: nonPlaceholder(storedProfile.cidade, 'São Paulo') || address.cidade || '',
-        email: nonPlaceholder(storedProfile.email, 'usuario@email.com') || account.email || user.email || '',
-        numero: nonPlaceholder(storedProfile.numero, '(00) 00000-0000') || account.fone || '',
-        arte: nonPlaceholder(storedProfile.arte, 'Desenho digital') || normalizedArtTypes || (user.tipo_perfil === 'empresa' ? 'Empresa' : 'Artista'),
-        avatar: storedProfile.avatar || '',
-        cover: storedProfile.cover || ''
-    };
+        // Busca o avatar com máxima prioridade: salvo nas alterações do perfil -> salvo no banco de dados
+        const avatarSrc = profile.avatar || account.avatar || user.avatar || '';
+        const coverSrc = profile.cover || account.cover || user.cover || '';
 
-    if (hasUser) {
-        localStorage.setItem('pallasProfile', JSON.stringify(profile));
-    }
+        const displayName = profile.nome
+            || account.nome_artistico
+            || account.nome_fantasia
+            || account.nome
+            || user.nome_artistico
+            || user.nome_fantasia
+            || user.nome
+            || user.login
+            || 'Usuário';
 
-    window.PallasUser = user;
-    window.PallasProfile = profile;
+        const initial = displayName.charAt(0).toUpperCase() || 'U';
+        const rawLogin = profile.usuario || user.login || account.login || 'usuario';
+        const displayUsername = rawLogin.startsWith('@') ? rawLogin : `@${rawLogin}`;
+        const displayBio = profile.bio || account.bio || user.bio || '';
+        const rawArte = profile.arte || account.tipo_arte || user.tipo_arte || '';
+        const displayArte = Array.isArray(rawArte) ? rawArte.join(', ') : rawArte;
 
-    document.addEventListener('DOMContentLoaded', function () {
-        const name = profile.nome || displayName;
-        const initial = name.charAt(0).toUpperCase() || 'U';
-        const username = `@${profile.usuario || 'usuario'}`;
+        setupNotificationIcon(user);
 
-        document.querySelectorAll('.social-header .profile-mini span, #header-name').forEach((element) => {
-            element.textContent = name;
+        // Atualizar Nome no Header e Perfil Mini
+        document.querySelectorAll('.social-header .profile-mini span, #header-name').forEach((el) => {
+            el.textContent = displayName;
         });
-        document.querySelectorAll('.social-header .profile-mini .avatar, #header-avatar, #portfolio-avatar, #post-avatar, #profile-avatar-preview, .social-profile .avatar, .perfil-social .perfil-avatar, .perfil-social .profile-post .avatar').forEach((avatar) => {
-            avatar.textContent = initial;
-            if (profile.avatar) {
-                const image = document.createElement('img');
-                image.src = profile.avatar;
-                image.alt = `Foto de perfil de ${name}`;
-                avatar.replaceChildren(image);
-                avatar.classList.add('has-image');
+
+        // Atualizar todas as instâncias de avatar do usuário logado
+        const avatarSelectors = [
+            '.social-header .profile-mini .avatar',
+            '#header-avatar',
+            '#portfolio-avatar',
+            '#post-avatar',
+            '#profile-avatar-preview',
+            '.social-profile .avatar',
+            '.perfil-social .perfil-avatar',
+            '.notificacoes-card .perfil-avatar',
+            '.perfil-social .profile-post .avatar',
+            '.edit-profile-container .avatar'
+        ].join(', ');
+
+        document.querySelectorAll(avatarSelectors).forEach((avatarEl) => {
+            if (avatarSrc) {
+                avatarEl.textContent = '';
+                const img = document.createElement('img');
+                img.src = avatarSrc;
+                img.alt = displayName;
+                img.style.width = '100%';
+                img.style.height = '100%';
+                img.style.objectFit = 'cover';
+                img.style.borderRadius = '50%';
+                avatarEl.replaceChildren(img);
+                avatarEl.classList.add('has-image');
+            } else {
+                avatarEl.textContent = initial;
+                avatarEl.classList.remove('has-image');
             }
         });
 
+        // Atualizar Banner/Cover
+        if (coverSrc) {
+            document.querySelectorAll('.perfil-cover, #profile-cover-preview').forEach((coverEl) => {
+                coverEl.style.backgroundImage = `url("${coverSrc}")`;
+                coverEl.classList.add('has-image');
+            });
+        }
+
+        // Sidebar da página inicial
         const sidebarName = document.querySelector('.social-profile h3');
-        if (sidebarName) sidebarName.textContent = name;
-        const sidebarHandle = document.querySelector('.social-profile > div p');
-        if (sidebarHandle) sidebarHandle.textContent = username;
+        if (sidebarName) sidebarName.textContent = displayName;
+        const sidebarHandle = document.querySelector('.social-profile > div p, .social-profile p');
+        if (sidebarHandle) sidebarHandle.textContent = displayUsername;
+        const sidebarBio = document.querySelector('.social-profile .profile-bio');
+        if (sidebarBio && displayBio) sidebarBio.textContent = displayBio;
 
-        const profileIdentity = document.querySelector('.perfil-social .perfil-identidade');
-        if (profileIdentity) {
-            const heading = profileIdentity.querySelector('h1');
-            const subtitle = profileIdentity.querySelector('p');
-            if (heading) heading.textContent = name;
-            if (subtitle) subtitle.textContent = `${username} • ${profile.arte}`;
-        }
+        // Página de Perfil
+        const perfilTitle = document.querySelector('.perfil-social .perfil-identidade h1');
+        if (perfilTitle) perfilTitle.textContent = displayName;
+        const perfilSubtitle = document.querySelector('.perfil-social .perfil-identidade p');
+        if (perfilSubtitle) perfilSubtitle.textContent = `${displayUsername} • ${displayArte || 'Artes Visuais'}`;
+        const perfilBio = document.querySelector('.perfil-social .perfil-bio-box p');
+        if (perfilBio && displayBio) perfilBio.textContent = displayBio;
 
-        const bio = document.querySelector('.perfil-social .perfil-bio-box p');
-        if (bio && profile.bio) bio.textContent = profile.bio;
-
-        if (profile.cover) {
-            const cover = document.querySelector('.perfil-social .perfil-cover');
-            if (cover) cover.style.backgroundImage = `url("${profile.cover}")`;
-        }
-
-        const profileValues = [profile.pais, profile.estado, profile.cidade, profile.email, profile.numero, profile.arte];
-        document.querySelectorAll('.perfil-social .perfil-lista p').forEach((item, index) => {
-            const value = profileValues[index];
-            if (value) item.lastChild.textContent = ` ${value}`;
-        });
-
-        const portfolioName = document.querySelector('#portfolio-name');
-        if (portfolioName) portfolioName.textContent = name;
-        const portfolioUsername = document.querySelector('#portfolio-username');
-        if (portfolioUsername) portfolioUsername.textContent = username;
-        const portfolioArtType = document.querySelector('#portfolio-art-type');
-        if (portfolioArtType) portfolioArtType.textContent = profile.arte;
-
+        // Atualizar post do autor em novopost
         const postAuthor = document.querySelector('#post-author-name');
-        if (postAuthor) postAuthor.textContent = name;
-    });
+        if (postAuthor) postAuthor.textContent = displayName;
+    }
+
+    function setupNotificationIcon(user) {
+        const notificationLink = document.querySelector('.social-actions a.icon-badge[href="notificacoes.html"]');
+        if (!notificationLink) return;
+
+        notificationLink.classList.add('notification-icon');
+        notificationLink.querySelector('.notification-profile-photo')?.remove();
+        if (!notificationLink.querySelector('.bi-bell')) {
+            const icon = document.createElement('i');
+            icon.className = 'bi bi-bell';
+            icon.setAttribute('aria-hidden', 'true');
+            notificationLink.insertBefore(icon, notificationLink.querySelector('.notification-indicator'));
+        }
+
+        const isNotificationsPage = window.location.pathname.endsWith('/notificacoes.html');
+        if (isNotificationsPage) {
+            notificationLink.querySelector('.notification-indicator')?.remove();
+            notificationLink.setAttribute('aria-label', 'Notificações');
+        }
+
+        const userId = user.usuario_id?._id || user.usuario_id
+            || user.perfil?.usuario_id?._id || user.perfil?.usuario_id
+            || user.perfil?._id || user._id || '';
+        if (!userId || isNotificationsPage) return;
+
+        const refreshNotificationIndicator = async () => {
+            try {
+                const response = await fetch(`/api/notificacoes/${encodeURIComponent(userId)}/nao-lidas`);
+                const result = await response.json();
+                if (!response.ok || !result.sucesso || !Number.isInteger(result.nao_lidas)) {
+                    throw new Error(result.mensagem || 'Não foi possível verificar as notificações.');
+                }
+
+                let indicator = notificationLink.querySelector('.notification-indicator');
+                if (result.nao_lidas > 0) {
+                    if (!indicator) {
+                        indicator = document.createElement('span');
+                        indicator.className = 'notification-indicator';
+                        indicator.setAttribute('aria-hidden', 'true');
+                        notificationLink.appendChild(indicator);
+                    }
+                    notificationLink.setAttribute('aria-label', `${result.nao_lidas} notificações não lidas`);
+                } else {
+                    indicator?.remove();
+                    notificationLink.setAttribute('aria-label', 'Notificações');
+                }
+            } catch (error) {
+                console.error('Erro ao verificar notificações:', error);
+            }
+        };
+
+        refreshNotificationIndicator();
+        if (!notificationLink.dataset.notificationStatusReady) {
+            notificationLink.dataset.notificationStatusReady = 'true';
+            window.setInterval(refreshNotificationIndicator, 15000);
+            window.addEventListener('focus', refreshNotificationIndicator);
+        }
+    }
+
+    function setupUserSearch() {
+        document.querySelectorAll('.social-search input').forEach((input) => {
+            if (input.id === 'profile-search' || input.dataset.userSearchReady) return;
+            input.dataset.userSearchReady = 'true';
+            input.setAttribute('aria-label', 'Pesquisar nomes de usuários');
+            input.placeholder = 'Pesquisar usuários...';
+
+            const search = () => {
+                const term = input.value.trim();
+                if (term) {
+                    window.location.href = `outros.html?q=${encodeURIComponent(term)}`;
+                }
+            };
+
+            input.addEventListener('keydown', (event) => {
+                if (event.key === 'Enter') {
+                    event.preventDefault();
+                    search();
+                }
+            });
+
+            const searchIcon = input.closest('.social-search')?.querySelector('i');
+            if (searchIcon) {
+                searchIcon.style.cursor = 'pointer';
+                searchIcon.setAttribute('role', 'button');
+                searchIcon.setAttribute('tabindex', '0');
+                searchIcon.setAttribute('aria-label', 'Pesquisar usuários');
+                searchIcon.addEventListener('click', search);
+                searchIcon.addEventListener('keydown', (event) => {
+                    if (event.key === 'Enter' || event.key === ' ') {
+                        event.preventDefault();
+                        search();
+                    }
+                });
+            }
+        });
+    }
+
+    if (document.readyState === 'loading') {
+        document.addEventListener('DOMContentLoaded', () => {
+            applyUserVisuals();
+            setupUserSearch();
+        });
+    } else {
+        applyUserVisuals();
+        setupUserSearch();
+    }
+    // Executa também após o carregamento completo para sobrepor quaisquer scripts inline
+    window.addEventListener('load', applyUserVisuals);
 })();

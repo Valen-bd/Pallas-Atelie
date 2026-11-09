@@ -8,6 +8,7 @@
 	<link rel="stylesheet" href="https://cdn.jsdelivr.net/npm/bootstrap-icons@1.11.3/font/bootstrap-icons.min.css">
 	<link rel="stylesheet" href="./css/style.css">
 	<script src="./js/user-session.js"></script>
+	<script src="./js/form-helpers.js"></script>
 </head>
 <body class="entrar-page">
 	<header class="social-header">
@@ -56,36 +57,36 @@
 					<input class="form-input" id="profile-cover-input" type="file" accept="image/jpeg,image/png,image/webp">
 					<button class="profile-image-remove" id="remove-cover" type="button">Remover banner</button>
 				</section>
-				<p class="profile-image-hint">Imagens JPG, PNG ou WEBP de até 1 MB.</p>
+				<p class="profile-image-hint">Imagens JPG, PNG ou WEBP de até 10 MB (compactação automática).</p>
 				<p class="profile-image-message" id="profile-image-message" role="status" aria-live="polite"></p>
 			</div>
 
 			<label class="form-label" for="nome">Nome</label>
-			<input class="form-input" id="nome" name="nome" type="text" value="Usuário" required>
+			<input class="form-input" id="nome" name="nome" type="text" placeholder="Seu nome ou nome artístico" required>
 
 			<label class="form-label" for="usuario">Nome de usuário</label>
-			<input class="form-input" id="usuario" name="usuario" type="text" value="@usuario" required>
+			<input class="form-input" id="usuario" name="usuario" type="text" placeholder="@usuario" required>
 
 			<label class="form-label" for="bio">Biografia</label>
-			<textarea class="form-input" id="bio" name="bio" rows="4" placeholder="Conte um pouco sobre você">Biografia do usuário.</textarea>
+			<textarea class="form-input" id="bio" name="bio" rows="4" placeholder="Conte um pouco sobre você"></textarea>
 
 			<label class="form-label" for="pais">País</label>
 			<input class="form-input" id="pais" name="pais" type="text" value="Brasil" required>
 
 			<label class="form-label" for="estado">Estado</label>
-			<input class="form-input" id="estado" name="estado" type="text" value="São Paulo" required>
+			<input class="form-input" id="estado" name="estado" type="text" placeholder="Estado (ex: SC)" required>
 
 			<label class="form-label" for="cidade">Cidade</label>
-			<input class="form-input" id="cidade" name="cidade" type="text" value="São Paulo" required>
+			<input class="form-input" id="cidade" name="cidade" type="text" placeholder="Cidade" required>
 
 			<label class="form-label" for="email">E-mail</label>
-			<input class="form-input" id="email" name="email" type="email" value="usuario@email.com" required>
+			<input class="form-input" id="email" name="email" type="email" placeholder="email@exemplo.com" required>
 
-			<label class="form-label" for="numero">Número</label>
-			<input class="form-input" id="numero" name="numero" type="tel" value="(00) 00000-0000" required>
+			<label class="form-label" for="numero">Telefone</label>
+			<input class="form-input" id="numero" name="numero" type="tel" placeholder="(00) 00000-0000" required>
 
 			<label class="form-label" for="arte">Tipo de arte</label>
-			<input class="form-input" id="arte" name="arte" type="text" value="Desenho digital" required>
+			<input class="form-input" id="arte" name="arte" type="text" placeholder="Ex: Desenho digital, Pintura" required>
 
 			<button class="btn btn-cadastrar register-submit" type="submit">Salvar alterações</button>
 			<a href="perfil.html" class="btn btn-entrar back-button">Cancelar</a>
@@ -98,35 +99,46 @@
 		if (userType === 'empresa') {
 			const artistaIcon = document.querySelector('.propostas-artista-icon');
 			if (artistaIcon) artistaIcon.style.display = 'none';
-		}
-		if (userType === 'artista') {
+		} else {
 			const empresaIcon = document.querySelector('.propostas-empresa-icon');
 			if (empresaIcon) empresaIcon.style.display = 'none';
 		}
 
 		const editForm = document.querySelector('#edit-profile-form');
-		const savedProfile = JSON.parse(localStorage.getItem('pallasProfile') || 'null');
 		const avatarInput = document.querySelector('#profile-avatar-input');
 		const coverInput = document.querySelector('#profile-cover-input');
 		const avatarPreview = document.querySelector('#profile-avatar-preview');
 		const coverPreview = document.querySelector('#profile-cover-preview');
 		const imageMessage = document.querySelector('#profile-image-message');
-		const maxImageSize = 1024 * 1024;
+		const maxImageSize = 10 * 1024 * 1024;
 		const acceptedImageTypes = ['image/jpeg', 'image/png', 'image/webp'];
-		let avatarData = savedProfile?.avatar || '';
-		let coverData = savedProfile?.cover || '';
 
-		function showAvatar(source) {
+		// Recuperar dados do usuário atual do localStorage
+		const userData = JSON.parse(localStorage.getItem('pallasUser') || '{}');
+		const perfilType = localStorage.getItem('pallasUserType') || userData.tipo_perfil || 'artista';
+		const usuarioId = userData.usuario_id || userData.perfil?.usuario_id || userData.perfil?._id || userData._id;
+
+		const currentProfileKey = usuarioId ? `pallasProfile_${usuarioId}` : 'pallasProfile';
+		let savedProfile = JSON.parse(localStorage.getItem(currentProfileKey) || localStorage.getItem('pallasProfile') || 'null');
+
+		let avatarData = '';
+		let coverData = '';
+
+		function showAvatar(source, fallbackName = '') {
 			if (source) {
 				const image = document.createElement('img');
 				image.src = source;
 				image.alt = 'Prévia da foto de perfil';
+				image.style.width = '100%';
+				image.style.height = '100%';
+				image.style.objectFit = 'cover';
+				image.style.borderRadius = '50%';
 				avatarPreview.replaceChildren(image);
 				avatarPreview.classList.add('has-image');
 				return;
 			}
-
-			avatarPreview.textContent = savedProfile?.nome?.trim()?.charAt(0).toUpperCase() || 'U';
+			const letter = (fallbackName || editForm.elements['nome']?.value || 'U').trim().charAt(0).toUpperCase();
+			avatarPreview.textContent = letter || 'U';
 			avatarPreview.classList.remove('has-image');
 		}
 
@@ -135,40 +147,124 @@
 			coverPreview.classList.toggle('has-image', Boolean(source));
 		}
 
-		function readImage(file) {
+		// Preenche os campos do formulário com dados do perfil
+		function populateFormFields(dados) {
+			if (!dados) return;
+
+			const name = dados.nome || dados.nome_artistico || dados.nome_fantasia || '';
+			const username = dados.usuario ? String(dados.usuario).replace(/^@/, '') : (userData.login ? String(userData.login).replace(/^@/, '') : '');
+			const bio = dados.bio || '';
+			const pais = dados.pais || dados.endereco?.pais || 'Brasil';
+			const estado = dados.estado || dados.endereco?.uf || '';
+			const cidade = dados.cidade || dados.endereco?.cidade || '';
+			const email = dados.email || userData.email || '';
+			const numero = dados.numero || dados.fone || '';
+			const arte = Array.isArray(dados.arte) ? dados.arte.join(', ') : (Array.isArray(dados.tipo_arte) ? dados.tipo_arte.join(', ') : (dados.arte || dados.tipo_arte || ''));
+
+			if (name && editForm.elements['nome']) editForm.elements['nome'].value = name;
+			if (username && editForm.elements['usuario']) editForm.elements['usuario'].value = `@${username}`;
+			if (editForm.elements['bio']) editForm.elements['bio'].value = bio;
+			if (pais && editForm.elements['pais']) editForm.elements['pais'].value = pais;
+			if (estado && editForm.elements['estado']) editForm.elements['estado'].value = estado;
+			if (cidade && editForm.elements['cidade']) editForm.elements['cidade'].value = cidade;
+			if (email && editForm.elements['email']) editForm.elements['email'].value = email;
+			if (numero && editForm.elements['numero']) editForm.elements['numero'].value = numero;
+			if (arte && editForm.elements['arte']) editForm.elements['arte'].value = arte;
+
+			avatarData = dados.avatar || avatarData || '';
+			coverData = dados.cover || coverData || '';
+
+			showAvatar(avatarData, name);
+			showCover(coverData);
+		}
+
+		// 1. Preenche imediatamente com o cache local (se houver)
+		if (savedProfile) {
+			populateFormFields(savedProfile);
+		} else if (userData.perfil) {
+			populateFormFields(userData.perfil);
+		}
+
+		// 2. Busca os dados mais recentes diretamente do MongoDB no backend
+		async function fetchFreshProfileFromBackend() {
+			if (!usuarioId || !perfilType) return;
+			try {
+				const res = await fetch(`/api/perfil/${perfilType}/${usuarioId}`);
+				const json = await res.json();
+				if (res.ok && json.sucesso && json.dados) {
+					populateFormFields(json.dados);
+				}
+			} catch (e) {
+				console.warn('Usando dados em cache:', e);
+			}
+		}
+		fetchFreshProfileFromBackend();
+
+		// Compressão de imagens em Canvas
+		function compressImageFile(file, maxWidth, maxHeight, quality = 0.8) {
 			return new Promise((resolve, reject) => {
 				const reader = new FileReader();
-				reader.addEventListener('load', () => {
-					if (typeof reader.result === 'string') {
-						resolve(reader.result);
-					} else {
-						reject(new Error('Não foi possível carregar essa imagem.'));
-					}
-				});
-				reader.addEventListener('error', () => reject(new Error('Não foi possível carregar essa imagem.')));
+				reader.onload = (e) => {
+					const img = new Image();
+					img.onload = () => {
+						let width = img.width;
+						let height = img.height;
+
+						if (width > maxWidth || height > maxHeight) {
+							if (width / height > maxWidth / maxHeight) {
+								height = Math.round((height * maxWidth) / width);
+								width = maxWidth;
+							} else {
+								width = Math.round((width * maxHeight) / height);
+								height = maxHeight;
+							}
+						}
+
+						const canvas = document.createElement('canvas');
+						canvas.width = width;
+						canvas.height = height;
+						const ctx = canvas.getContext('2d');
+						ctx.drawImage(img, 0, 0, width, height);
+
+						let compressedData = canvas.toDataURL('image/webp', quality);
+						if (!compressedData.startsWith('data:image/webp')) {
+							compressedData = canvas.toDataURL('image/jpeg', quality);
+						}
+						resolve(compressedData);
+					};
+					img.onerror = () => reject(new Error('Falha ao processar arquivo de imagem.'));
+					img.src = e.target.result;
+				};
+				reader.onerror = () => reject(new Error('Falha ao ler arquivo.'));
 				reader.readAsDataURL(file);
 			});
 		}
 
-		function watchImageInput(input, showImage) {
-			input.addEventListener('change', () => {
+		function watchImageInput(input, showImage, isAvatar = true) {
+			input.addEventListener('change', async () => {
 				const image = input.files[0];
 				if (!image) return;
 				if (!acceptedImageTypes.includes(image.type) || image.size > maxImageSize) {
-					imageMessage.textContent = 'Escolha uma imagem JPG, PNG ou WEBP de até 1 MB.';
+					imageMessage.textContent = 'Escolha uma imagem JPG, PNG ou WEBP de até 10 MB.';
 					input.value = '';
 					return;
 				}
 
-				imageMessage.textContent = '';
-				readImage(image).then((source) => {
-					if (input.files[0] === image) showImage(source);
-				}).catch(() => {
+				imageMessage.textContent = 'Processando imagem...';
+				try {
+					const maxWidth = isAvatar ? 400 : 1200;
+					const maxHeight = isAvatar ? 400 : 500;
+					const compressed = await compressImageFile(image, maxWidth, maxHeight, 0.82);
 					if (input.files[0] === image) {
-						imageMessage.textContent = 'Não foi possível carregar essa imagem. Tente selecionar outro arquivo.';
-						input.value = '';
+						if (isAvatar) avatarData = compressed;
+						else coverData = compressed;
+						showImage(compressed);
+						imageMessage.textContent = '';
 					}
-				});
+				} catch (err) {
+					imageMessage.textContent = 'Não foi possível carregar essa imagem. Tente selecionar outro arquivo.';
+					input.value = '';
+				}
 			});
 		}
 
@@ -178,8 +274,9 @@
 			imageMessage.textContent = '';
 		}
 
-		watchImageInput(avatarInput, showAvatar);
-		watchImageInput(coverInput, showCover);
+		watchImageInput(avatarInput, showAvatar, true);
+		watchImageInput(coverInput, showCover, false);
+
 		document.querySelector('#remove-avatar').addEventListener('click', () => {
 			avatarData = '';
 			removeImage(avatarInput, showAvatar);
@@ -189,28 +286,87 @@
 			removeImage(coverInput, showCover);
 		});
 
-		if (savedProfile) {
-			Object.entries(savedProfile).forEach(([field, value]) => {
-				const input = editForm.elements[field];
-				if (input) input.value = value;
-			});
+		function safeSaveLocalStorage(key, value) {
+			try {
+				localStorage.setItem(key, value);
+			} catch (e) {
+				console.warn('LocalStorage cheio ou inacessível ao salvar chave:', key);
+			}
 		}
-		showAvatar(avatarData);
-		showCover(coverData);
 
 		editForm.addEventListener('submit', async (event) => {
 			event.preventDefault();
+			const submitBtn = editForm.querySelector('button[type="submit"]');
+			if (submitBtn) submitBtn.disabled = true;
+			imageMessage.textContent = 'Salvando alterações...';
+
 			const profileData = Object.fromEntries(new FormData(event.currentTarget));
 			try {
-				if (avatarInput.files[0]) avatarData = await readImage(avatarInput.files[0]);
-				if (coverInput.files[0]) coverData = await readImage(coverInput.files[0]);
+				if (avatarInput.files[0] && (!avatarData || avatarData.length > 500000)) {
+					avatarData = await compressImageFile(avatarInput.files[0], 400, 400, 0.82);
+				}
+				if (coverInput.files[0] && (!coverData || coverData.length > 800000)) {
+					coverData = await compressImageFile(coverInput.files[0], 1200, 500, 0.80);
+				}
+
 				profileData.avatar = avatarData;
 				profileData.cover = coverData;
-				localStorage.setItem('pallasProfile', JSON.stringify(profileData));
+
+				if (usuarioId && perfilType) {
+					const response = await fetch(`/api/perfil/${perfilType}/${usuarioId}`, {
+						method: 'PUT',
+						headers: { 'Content-Type': 'application/json' },
+						body: JSON.stringify({
+							...profileData,
+							usuario: profileData.usuario,
+							avatar: avatarData,
+							cover: coverData,
+							bio: profileData.bio,
+							arte: profileData.arte,
+							pais: profileData.pais,
+							estado: profileData.estado,
+							cidade: profileData.cidade,
+							email: profileData.email,
+							fone: profileData.numero,
+							nome: profileData.nome,
+							nome_artistico: profileData.nome,
+							nome_fantasia: profileData.nome,
+							responsavel: profileData.nome
+						})
+					});
+
+					const resData = await response.json().catch(() => ({}));
+					if (!response.ok) {
+						throw new Error(resData.mensagem || 'Falha ao persistir no servidor.');
+					}
+
+					if (resData.dados) {
+						if (resData.dados.avatar) avatarData = resData.dados.avatar;
+						if (resData.dados.cover) coverData = resData.dados.cover;
+					}
+				}
+
+				// Salvar no cache com a chave do usuário logado e também a geral
+				profileData.avatar = avatarData;
+				profileData.cover = coverData;
+				safeSaveLocalStorage(currentProfileKey, JSON.stringify(profileData));
+				safeSaveLocalStorage('pallasProfile', JSON.stringify(profileData));
+
+				const updatedUser = JSON.parse(localStorage.getItem('pallasUser') || '{}');
+				updatedUser.perfil = updatedUser.perfil || {};
+				updatedUser.perfil.nome = profileData.nome;
+				updatedUser.perfil.avatar = avatarData;
+				updatedUser.perfil.cover = coverData;
+				updatedUser.perfil.bio = profileData.bio;
+				safeSaveLocalStorage('pallasUser', JSON.stringify(updatedUser));
+
 			} catch (error) {
-				imageMessage.textContent = 'Não foi possível salvar as imagens. Tente arquivos menores.';
+				console.error('Erro ao salvar perfil:', error);
+				imageMessage.textContent = error.message || 'Não foi possível salvar as imagens. Tente outros arquivos.';
+				if (submitBtn) submitBtn.disabled = false;
 				return;
 			}
+
 			window.location.href = 'perfil.html?updated=true';
 		});
 

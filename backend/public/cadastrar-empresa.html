@@ -1,4 +1,4 @@
-<!DOCTYPE html>
+﻿<!DOCTYPE html>
 <html lang="pt-br">
 <head>
     <meta charset="UTF-8">
@@ -7,6 +7,7 @@
     <title>Cadastrar Empresa - Pallas Ateliê</title>
     <link rel="shortcut icon" type="image/png" href="images/PA-TCC logo.png">
     <link rel="stylesheet" href="./css/style.css">
+    <script src="./js/form-helpers.js"></script>
 </head>
 <body class="register-page">
     <header>
@@ -48,10 +49,14 @@
                 <input id="pais" name="pais" type="text" class="form-input" placeholder="Ex: Brasil" value="Brasil" required>
 
                 <label class="form-label" for="estado">Estado</label>
-                <input id="estado" name="estado" type="text" class="form-input" placeholder="Ex: Santa Catarina ou SC" required>
+                <select id="estado" name="estado" class="form-input" required>
+                    <option value="" disabled selected>Carregando estados...</option>
+                </select>
 
                 <label class="form-label" for="cidade">Cidade</label>
-                <input id="cidade" name="cidade" type="text" class="form-input" placeholder="Ex: Joinville" required>
+                <select id="cidade" name="cidade" class="form-input" disabled required>
+                    <option value="" disabled selected>Selecione um estado primeiro</option>
+                </select>
 
                 <label class="form-label" for="cnpj">CNPJ</label>
                 <input id="cnpj" name="cnpj" type="text" class="form-input" placeholder="00.000.000/0000-00" required>
@@ -75,31 +80,13 @@
             <a href="cadastrar.html" class="btn btn-entrar back-button">Voltar</a>
         </div>
     </main>
+
     <script>
         const form = document.getElementById('form-empresa');
         const alertBox = document.getElementById('mensagem-alerta');
         const submitBtn = document.getElementById('btn-submit');
 
-        const API_BASE_URL = (() => {
-            const isStaticPreview = ['5500', '5501', '8080'].includes(window.location.port) || window.location.protocol === 'file:';
-            return isStaticPreview ? 'http://localhost:3000' : window.location.origin;
-        })();
-
-        async function apiRequest(url, options = {}) {
-            const response = await fetch(`${API_BASE_URL}${url}`, options);
-            const text = await response.text();
-
-            let data = {};
-            if (text) {
-                try {
-                    data = JSON.parse(text);
-                } catch (error) {
-                    throw new Error('A API respondeu com conteúdo inválido. Verifique se o backend está rodando em http://localhost:3000');
-                }
-            }
-
-            return { response, data };
-        }
+        setupLocationSelects('estado', 'cidade', 'SC');
 
         function exibirAlerta(msg, tipo = 'erro') {
             alertBox.style.display = 'block';
@@ -115,14 +102,22 @@
             }
         }
 
-        form.addEventListener('submit', async function(event) {
-            event.preventDefault();
+        form.addEventListener('submit', async function(e) {
+            e.preventDefault();
 
             const senha = document.getElementById('senha').value;
             const confirmarSenha = document.getElementById('confirmar-senha').value;
 
             if (senha !== confirmarSenha) {
                 exibirAlerta('As senhas não coincidem!');
+                return;
+            }
+
+            const estadoVal = document.getElementById('estado').value;
+            const cidadeVal = document.getElementById('cidade').value;
+
+            if (!estadoVal || !cidadeVal) {
+                exibirAlerta('Por favor, selecione seu Estado e Cidade.');
                 return;
             }
 
@@ -135,8 +130,8 @@
                 responsavel: document.getElementById('responsavel').value,
                 email: document.getElementById('email').value,
                 pais: document.getElementById('pais').value,
-                estado: document.getElementById('estado').value,
-                cidade: document.getElementById('cidade').value,
+                estado: estadoVal,
+                cidade: cidadeVal,
                 cnpj: document.getElementById('cnpj').value,
                 fone: document.getElementById('fone').value,
                 area: document.getElementById('area').value,
@@ -144,11 +139,13 @@
             };
 
             try {
-                const { response, data } = await apiRequest('/api/auth/cadastrar-empresa', {
+                const response = await fetch('/api/auth/cadastrar-empresa', {
                     method: 'POST',
                     headers: { 'Content-Type': 'application/json' },
                     body: JSON.stringify(payload)
                 });
+
+                const data = await response.json();
 
                 if (!response.ok || !data.sucesso) {
                     exibirAlerta(data.mensagem || 'Erro ao realizar cadastro.');
@@ -157,9 +154,9 @@
                     return;
                 }
 
-                exibirAlerta('Empresa criada com sucesso no MongoDB! Redirecionando...', 'sucesso');
-                localStorage.removeItem('pallasProfile');
+                exibirAlerta('Empresa cadastrada com sucesso! Redirecionando...', 'sucesso');
                 localStorage.setItem('pallasUserType', 'empresa');
+                localStorage.removeItem('pallasProfile');
                 localStorage.setItem('pallasUser', JSON.stringify(data.dados));
 
                 setTimeout(() => {
@@ -172,4 +169,5 @@
             }
         });
     </script>
-
+</body>
+</html>

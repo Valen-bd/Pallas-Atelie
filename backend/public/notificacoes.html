@@ -45,14 +45,8 @@
                 </div>
             </div>
 
-            <div class="notificacao-item">
-                <strong>Nova mensagem</strong>
-                <p>Você recebeu uma nova mensagem da equipe Pallas.</p>
-            </div>
-
-            <div class="notificacao-item">
-                <strong>Atualização de perfil</strong>
-                <p>Seu perfil foi atualizado com sucesso.</p>
+            <div id="notifications-list" aria-live="polite">
+                <p class="notificacoes-empty">Carregando notificações...</p>
             </div>
         </section>
     </main>
@@ -68,6 +62,108 @@
             const empresaIcon = document.querySelector('.propostas-empresa-icon');
             if (empresaIcon) empresaIcon.style.display = 'none';
         }
+
+        let currentUser = {};
+        try {
+            currentUser = JSON.parse(localStorage.getItem('pallasUser') || '{}');
+        } catch (error) {
+            console.error('Não foi possível ler os dados da sessão:', error);
+        }
+        const currentUserId = currentUser.usuario_id?._id || currentUser.usuario_id
+            || currentUser.perfil?.usuario_id?._id || currentUser.perfil?.usuario_id
+            || currentUser.perfil?._id || currentUser._id || '';
+        const notificationsList = document.getElementById('notifications-list');
+
+        function formatNotificationDate(value) {
+            const date = new Date(value);
+            return Number.isNaN(date.getTime()) ? '' : date.toLocaleString('pt-BR');
+        }
+
+        async function markNotificationsAsViewed(notificationIds) {
+            const response = await fetch(`/api/notificacoes/${encodeURIComponent(currentUserId)}/visualizadas`, {
+                method: 'PATCH',
+                headers: { 'Content-Type': 'application/json' },
+                body: JSON.stringify({ notificacaoIds: notificationIds })
+            });
+            const result = await response.json();
+            if (!response.ok || !result.sucesso) {
+                throw new Error(result.mensagem || 'Não foi possível marcar as notificações como vistas.');
+            }
+
+            document.querySelectorAll('.notification-indicator').forEach((indicator) => indicator.remove());
+            const notificationLink = document.querySelector('.social-actions a.icon-badge[href="notificacoes.html"]');
+            notificationLink?.setAttribute('aria-label', 'Notificações');
+        }
+
+        async function loadNotifications() {
+            if (!currentUserId) {
+                notificationsList.innerHTML = '<p class="notificacoes-empty">Entre na sua conta para ver as notificações.</p>';
+                return;
+            }
+
+            try {
+                const response = await fetch(`/api/notificacoes/${encodeURIComponent(currentUserId)}`);
+                const result = await response.json();
+                if (!response.ok || !result.sucesso || !Array.isArray(result.dados)) {
+                    throw new Error(result.mensagem || 'Não foi possível carregar as notificações.');
+                }
+
+                if (result.dados.length === 0) {
+                    notificationsList.innerHTML = '<p class="notificacoes-empty">Você ainda não tem notificações.</p>';
+                } else {
+                    notificationsList.replaceChildren(...result.dados.map((notification) => {
+                        const item = document.createElement('a');
+                        item.className = 'notificacao-item';
+                        item.href = notification.publicacao_id
+                            ? `perfil.html?publicacao=${encodeURIComponent(notification.publicacao_id)}`
+                            : 'perfil.html';
+
+                        const avatar = document.createElement('div');
+                        avatar.className = 'avatar small notificacao-avatar';
+                        if (notification.avatar) {
+                            const image = document.createElement('img');
+                            image.src = notification.avatar;
+                            image.alt = '';
+                            avatar.appendChild(image);
+                        } else {
+                            avatar.textContent = (notification.autor || 'U').charAt(0).toUpperCase();
+                        }
+
+                        const content = document.createElement('div');
+                        content.className = 'notificacao-conteudo';
+                        const title = document.createElement('strong');
+                        title.textContent = notification.tipo === 'curtida'
+                            ? `${notification.autor} curtiu sua publicação`
+                            : `${notification.autor} comentou na sua publicação`;
+                        content.appendChild(title);
+                        if (notification.texto) {
+                            const comment = document.createElement('p');
+                            comment.textContent = `“${notification.texto}”`;
+                            content.appendChild(comment);
+                        }
+                        const date = document.createElement('time');
+                        date.className = 'notificacao-data';
+                        date.dateTime = notification.criado_em || '';
+                        date.textContent = formatNotificationDate(notification.criado_em);
+                        content.appendChild(date);
+                        item.append(avatar, content);
+                        return item;
+                    }));
+                }
+
+                await markNotificationsAsViewed(result.dados.map((notification) => notification.id));
+            } catch (error) {
+                console.error('Erro ao buscar notificações:', error);
+                if (notificationsList.querySelector('.notificacao-item')) {
+                    console.error('As notificações foram carregadas, mas podem continuar marcadas como não vistas.');
+                } else {
+                    notificationsList.innerHTML = '<p class="notificacoes-empty">Não foi possível carregar as notificações.</p>';
+                }
+            }
+        }
+
+        loadNotifications();
+        window.setInterval(loadNotifications, 15000);
 
         let lastScrollTop = 0;
 
@@ -85,4 +181,3 @@
     </script>
 </body>
 </html>
-

@@ -1,9 +1,9 @@
-<!DOCTYPE html>
+﻿<!DOCTYPE html>
 <html lang="pt-br">
 <head>
     <meta charset="UTF-8">
     <meta name="viewport" content="width=device-width, initial-scale=1.0">
-    <title>Entrar | Pallas Ateliê</title>
+    <title>Início | Pallas Ateliê</title>
     <link rel="shortcut icon" type="image/png" href="images/PA-TCC logo.png">
     <link rel="stylesheet" href="https://cdn.jsdelivr.net/npm/bootstrap-icons@1.11.3/font/bootstrap-icons.min.css">
     <link rel="stylesheet" href="./css/style.css">
@@ -13,7 +13,9 @@
     <header class="social-header">
         <div class="social-header-content">
             <div class="logo">
-                <img src="images/pa1.png" id="logimagem" alt="Logo Pallas Ateliê">
+                <a href="inicial.html">
+                    <img src="images/pa1.png" id="logimagem" alt="Logo Pallas Ateliê">
+                </a>
             </div>
 
             <div class="social-search">
@@ -47,7 +49,6 @@
             <section class="panel-card">
                 <h4>Explorar</h4>
                 <ul>
-                    
                     <li><a href="meuportifolio.html">Portfólio</a></li>
                     <li><a href="outros.html"><i class="bi bi-people" aria-hidden="true"></i> Encontrar perfis</a></li>
                 </ul>
@@ -57,12 +58,9 @@
         <section class="social-feed">
             <section class="composer-card">
                 <h3>O que você quer compartilhar hoje?</h3>
-                <div class="composer-actions">
-                    
-                </div>
+                <div class="composer-actions"></div>
                 <a href="novopost.html" class="composer-link"><i class="bi bi-plus-circle" aria-hidden="true"></i> Criar publicação</a>
             </section>
-
 
             <article class="post-card" data-post-id="inicio-1">
                 <div class="post-header">
@@ -99,8 +97,8 @@
                     </div>
                     <span class="tag alt">Em destaque</span>
                 </div>
-                <p>Legenda</p>
-                <img src="images/pallas2.png" alt="Post artístico">
+                <p>Novo processo de pintura concluído hoje!</p>
+                <img src="images/pallas3.png" alt="Post artístico 2">
                 <div class="post-engagement">
                     <button class="post-action like-button" type="button" aria-label="Curtir arte" aria-pressed="false"><i class="bi bi-heart" aria-hidden="true"></i> Curtir <span class="like-count">0</span></button>
                     <span class="post-metric"><i class="bi bi-chat" aria-hidden="true"></i> <span class="comment-count">0</span> comentários</span>
@@ -114,52 +112,11 @@
         </section>
 
         <aside class="social-aside">
-            
-
             <section class="panel-card">
                 <h4>Sugestões</h4>
-                <a href="perfil-publico.html?perfil=marina-costa" class="suggestion suggestion-link">
-                    <div class="avatar small">MC</div>
-                    <div>
-                        <strong>Marina Costa</strong>
-                        <p>Artista • Ilustração</p>
-                    </div>
-                </a>
-                <a href="perfil-publico.html?perfil=rafael-almeida" class="suggestion suggestion-link">
-                    <div class="avatar small">RA</div>
-                    <div>
-                        <strong>Rafael Almeida</strong>
-                        <p>Artista • Design gráfico</p>
-                    </div>
-                </a>
-                <a href="perfil-publico.html?perfil=estudio-aurora" class="suggestion suggestion-link">
-                    <div class="avatar small">EA</div>
-                    <div>
-                        <strong>Estúdio Aurora</strong>
-                        <p>Empresa • Estúdio criativo</p>
-                    </div>
-                </a>
-                <a href="perfil-publico.html?perfil=beatriz-lima" class="suggestion suggestion-link">
-                    <div class="avatar small">BL</div>
-                    <div>
-                        <strong>Beatriz Lima</strong>
-                        <p>Artista • Cerâmica</p>
-                    </div>
-                </a>
-                <a href="perfil-publico.html?perfil=casa-linha" class="suggestion suggestion-link">
-                    <div class="avatar small">CL</div>
-                    <div>
-                        <strong>Casa Linha</strong>
-                        <p>Empresa • Decoração</p>
-                    </div>
-                </a>
-                <a href="perfil-publico.html?perfil=joao-pedro-santos" class="suggestion suggestion-link">
-                    <div class="avatar small">JP</div>
-                    <div>
-                        <strong>João Pedro Santos</strong>
-                        <p>Artista • Arte digital</p>
-                    </div>
-                </a>
+                <div id="suggestions-list" class="suggestions-container">
+                    <p style="font-size: 0.85rem; color: #666; margin: 8px 0;">Carregando sugestões...</p>
+                </div>
             </section>
         </aside>
     </main>
@@ -168,31 +125,75 @@
         const header = document.querySelector('.social-header');
         const userType = localStorage.getItem('pallasUserType');
         const userDataStr = localStorage.getItem('pallasUser');
+        let currentUserId = '';
 
         if (userDataStr) {
             try {
                 const user = JSON.parse(userDataStr);
-                const displayName = user.nome_artistico || user.nome || user.nome_fantasia || user.login || 'Usuário';
-                const displayLogin = user.login || 'usuario';
-                const initial = displayName.charAt(0).toUpperCase();
-
-                // Atualizar Mini Perfil no Header
-                const miniProfileSpan = document.querySelector('.profile-mini span');
-                const miniProfileAvatar = document.querySelector('.profile-mini .avatar');
-                if (miniProfileSpan) miniProfileSpan.innerText = displayName;
-                if (miniProfileAvatar) miniProfileAvatar.innerText = initial;
-
-                // Atualizar Card de Perfil na Sidebar
-                const profileTitle = document.querySelector('.social-profile h3');
-                const profileHandle = document.querySelector('.social-profile p');
-                const profileAvatar = document.querySelector('.social-profile .avatar');
-                if (profileTitle) profileTitle.innerText = displayName;
-                if (profileHandle) profileHandle.innerText = '@' + displayLogin;
-                if (profileAvatar) profileAvatar.innerText = initial;
+                currentUserId = user.usuario_id || user.perfil?.usuario_id || user.perfil?._id || user._id || '';
             } catch (e) {
                 console.error('Erro ao ler usuário logado:', e);
             }
         }
+
+        // Carregar sugestões de perfis reais do banco de dados MongoDB
+        async function loadSuggestions() {
+            const container = document.getElementById('suggestions-list');
+            if (!container) return;
+
+            try {
+                const url = currentUserId ? `/api/sugestoes?exceto=${encodeURIComponent(currentUserId)}` : '/api/sugestoes';
+                const res = await fetch(url);
+                const data = await res.json();
+
+                if (!res.ok || !data.sucesso || !data.dados || data.dados.length === 0) {
+                    container.innerHTML = '<p style="font-size: 0.85rem; color: #777; margin: 8px 0;">Nenhum outro perfil encontrado no momento.</p>';
+                    return;
+                }
+
+                container.innerHTML = '';
+                data.dados.forEach((perfil) => {
+                    const item = document.createElement('a');
+                    item.href = `perfil-publico.html?id=${encodeURIComponent(perfil.id)}`;
+                    item.className = 'suggestion suggestion-link';
+
+                    const nome = perfil.nome || 'Usuário';
+                    const area = perfil.area || perfil.detalhe || 'Artes Visuais';
+                    const avatar = document.createElement('div');
+                    avatar.className = 'avatar small';
+                    avatar.style.overflow = 'hidden';
+                    avatar.style.display = 'flex';
+                    avatar.style.alignItems = 'center';
+                    avatar.style.justifyContent = 'center';
+                    if (perfil.avatar) {
+                        const image = document.createElement('img');
+                        image.src = perfil.avatar;
+                        image.alt = '';
+                        image.style.width = '100%';
+                        image.style.height = '100%';
+                        image.style.borderRadius = '50%';
+                        image.style.objectFit = 'cover';
+                        avatar.appendChild(image);
+                    } else {
+                        avatar.textContent = nome.charAt(0).toUpperCase();
+                    }
+
+                    const identity = document.createElement('div');
+                    const name = document.createElement('strong');
+                    name.textContent = nome;
+                    const description = document.createElement('p');
+                    description.textContent = `${perfil.tipo || 'Perfil'} • ${area}`;
+                    identity.append(name, description);
+                    item.append(avatar, identity);
+                    container.appendChild(item);
+                });
+            } catch (err) {
+                console.error('Erro ao buscar sugestões de perfis:', err);
+                container.innerHTML = '<p style="font-size: 0.85rem; color: #777; margin: 8px 0;">Não foi possível carregar as sugestões.</p>';
+            }
+        }
+
+        loadSuggestions();
 
         if (userType === 'empresa') {
             const artistaIcon = document.querySelector('.propostas-artista-icon');
@@ -204,16 +205,13 @@
         }
 
         let lastScrollTop = 0;
-
         window.addEventListener('scroll', () => {
             const currentScroll = window.scrollY;
-
             if (currentScroll > 80 && currentScroll > lastScrollTop) {
                 header.classList.add('is-hidden');
             } else {
                 header.classList.remove('is-hidden');
             }
-
             lastScrollTop = currentScroll <= 0 ? 0 : currentScroll;
         });
     </script>

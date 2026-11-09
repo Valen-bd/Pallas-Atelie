@@ -1,4 +1,4 @@
-<!DOCTYPE html>
+﻿<!DOCTYPE html>
 <html lang="pt-br">
 <head>
     <meta charset="UTF-8">
@@ -32,15 +32,18 @@
 
     <main class="perfil-container" id="public-profile" hidden>
         <section class="perfil-card perfil-social">
-            <div class="perfil-cover"></div>
+            <div class="perfil-cover" id="public-cover"></div>
 
             <div class="perfil-hero">
-                <div class="avatar perfil-avatar" id="public-avatar" aria-hidden="true"></div>
+                <div class="avatar perfil-avatar" id="public-avatar" aria-hidden="true" style="overflow:hidden;display:flex;align-items:center;justify-content:center;"></div>
                 <div class="perfil-identidade">
                     <h1 id="public-name"></h1>
                     <p id="public-handle"></p>
                 </div>
                 <div class="perfil-actions">
+                    <button id="btn-follow" class="perfil-btn" type="button" style="cursor:pointer;">
+                        <i class="bi bi-person-plus-fill"></i> <span id="follow-text">Seguir</span>
+                    </button>
                     <a href="outros.html" class="perfil-btn perfil-btn-secondary"><i class="bi bi-people" aria-hidden="true"></i> Ver outros perfis</a>
                 </div>
             </div>
@@ -51,25 +54,33 @@
 
             <div class="perfil-stats">
                 <div class="stat-card">
-                    <strong id="public-post-count"></strong>
+                    <strong id="public-post-count">0</strong>
                     <span>Publicações</span>
                 </div>
-                <div class="stat-card">
-                    <strong id="public-followers"></strong>
+                <button class="stat-card" id="public-followers-button" type="button" aria-controls="followers-dialog" data-relation="seguidores">
+                    <strong id="public-followers">0</strong>
                     <span>Seguidores</span>
-                </div>
-                <div class="stat-card">
-                    <strong id="public-following"></strong>
+                </button>
+                <button class="stat-card" id="public-following-button" type="button" aria-controls="followers-dialog" data-relation="seguindo">
+                    <strong id="public-following">0</strong>
                     <span>Seguindo</span>
-                </div>
+                </button>
             </div>
+
+            <dialog class="followers-dialog" id="followers-dialog" aria-labelledby="followers-dialog-title">
+                <div class="followers-dialog-header">
+                    <h2 id="followers-dialog-title">Seguidores</h2>
+                    <button class="followers-dialog-close" type="button" aria-label="Fechar lista">&times;</button>
+                </div>
+                <div class="followers-list" id="followers-list" aria-live="polite"></div>
+            </dialog>
 
             <div class="perfil-content-grid">
                 <section class="perfil-info-panel">
                     <h3>Sobre</h3>
                     <div class="perfil-lista">
                         <p><span class="perfil-label">Tipo de perfil:</span> <span id="public-type"></span></p>
-                        <p><span class="perfil-label">Área:</span> <span id="public-area"></span></p>
+                        <p><span class="perfil-label">Área / Arte:</span> <span id="public-area"></span></p>
                         <p><span class="perfil-label">Cidade:</span> <span id="public-city"></span></p>
                         <p><span class="perfil-label">Estado:</span> <span id="public-state"></span></p>
                     </div>
@@ -77,20 +88,9 @@
 
                 <section class="perfil-feed-panel">
                     <h3>Publicações recentes</h3>
-                    <article class="post-card profile-post">
-                        <div class="post-header">
-                            <div class="post-user">
-                                <div class="avatar small public-post-avatar" aria-hidden="true"></div>
-                                <div>
-                                    <strong class="public-post-author"></strong>
-                                    <p>Publicação em destaque</p>
-                                </div>
-                            </div>
-                            <span class="tag">Portfólio</span>
-                        </div>
-                        <p class="public-post-caption"></p>
-                        <img src="images/pallas2.png" alt="Trabalho artístico em destaque">
-                    </article>
+                    <div class="profile-publications" id="profile-publications" aria-live="polite">
+                        <p class="profile-publications-message">Carregando publicações...</p>
+                    </div>
                 </section>
             </div>
         </section>
@@ -98,114 +98,208 @@
 
     <main class="public-profile-error" id="profile-error" hidden>
         <h1>Perfil não encontrado</h1>
-        <p>Não foi possível encontrar esse perfil. Confira o endereço ou explore outros perfis.</p>
+        <p>Não foi possível encontrar esse perfil. Confira o endereço ou explore outros perfis da comunidade.</p>
         <a href="outros.html">Explorar perfis</a>
     </main>
 
+    <script src="./js/profile-publications.js"></script>
     <script>
-        const profiles = {
-            'marina-costa': {
-                name: 'Marina Costa',
-                handle: '@marinacosta.art',
-                type: 'Artista',
-                area: 'Ilustração e aquarela',
-                city: 'Florianópolis',
-                state: 'SC',
-                bio: 'Ilustradora apaixonada por cores, natureza e narrativas visuais.',
-                followers: 248,
-                following: 180,
-                post: 'Estudo de cores e formas inspirado pelas paisagens e pela natureza.'
-            },
-            'rafael-almeida': {
-                name: 'Rafael Almeida',
-                handle: '@rafaelalmeida.design',
-                type: 'Artista',
-                area: 'Design gráfico e identidade visual',
-                city: 'Curitiba',
-                state: 'PR',
-                bio: 'Designer gráfico criando identidades visuais com personalidade.',
-                followers: 192,
-                following: 146,
-                post: 'Exploração de formas e tipografia para uma identidade visual autoral.'
-            },
-            'estudio-aurora': {
-                name: 'Estúdio Aurora',
-                handle: '@estudioaurora',
-                type: 'Empresa',
-                area: 'Estúdio criativo e colaborações',
-                city: 'São Paulo',
-                state: 'SP',
-                bio: 'Estúdio independente que conecta arte, design e projetos locais.',
-                followers: 560,
-                following: 210,
-                post: 'Nosso espaço está aberto para novas ideias e colaborações criativas.'
-            },
-            'beatriz-lima': {
-                name: 'Beatriz Lima',
-                handle: '@bia.lima.art',
-                type: 'Artista',
-                area: 'Cerâmica e artesanato',
-                city: 'Belo Horizonte',
-                state: 'MG',
-                bio: 'Ceramista e artesã; transformo ideias em peças feitas à mão.',
-                followers: 315,
-                following: 202,
-                post: 'Peças artesanais feitas à mão, com texturas e formas inspiradas no cotidiano.'
-            },
-            'casa-linha': {
-                name: 'Casa Linha',
-                handle: '@casalinha',
-                type: 'Empresa',
-                area: 'Decoração e arte local',
-                city: 'Recife',
-                state: 'PE',
-                bio: 'Marca de decoração que valoriza o trabalho de artistas brasileiros.',
-                followers: 734,
-                following: 128,
-                post: 'Uma seleção de trabalhos de artistas brasileiros para trazer mais arte para casa.'
-            },
-            'joao-pedro-santos': {
-                name: 'João Pedro Santos',
-                handle: '@jpsantos.ilustra',
-                type: 'Artista',
-                area: 'Arte digital e concept art',
-                city: 'Porto Alegre',
-                state: 'RS',
-                bio: 'Ilustração digital e concept art inspirados por fantasia e cultura pop.',
-                followers: 421,
-                following: 267,
-                post: 'Estudo de personagem e cenário para um novo projeto de fantasia.'
-            }
-        };
-
-        const profile = profiles[new URLSearchParams(window.location.search).get('perfil')];
         const profilePage = document.querySelector('#public-profile');
         const profileError = document.querySelector('#profile-error');
+        const urlParams = new URLSearchParams(window.location.search);
+        const profileId = urlParams.get('id') || urlParams.get('perfil');
 
-        if (!profile) {
-            profileError.hidden = false;
-        } else {
-            profilePage.hidden = false;
-            document.title = `${profile.name} | Pallas Ateliê`;
-            document.querySelector('#public-name').textContent = profile.name;
-            document.querySelector('#public-handle').textContent = `${profile.handle} • ${profile.type}`;
-            document.querySelector('#public-bio').textContent = profile.bio;
-            document.querySelector('#public-post-count').textContent = '1';
-            document.querySelector('#public-followers').textContent = profile.followers;
-            document.querySelector('#public-following').textContent = profile.following;
-            document.querySelector('#public-type').textContent = profile.type;
-            document.querySelector('#public-area').textContent = profile.area;
-            document.querySelector('#public-city').textContent = profile.city;
-            document.querySelector('#public-state').textContent = profile.state;
-            document.querySelector('#public-avatar').textContent = profile.name.split(/\s+/).map((part) => part[0]).slice(0, 2).join('').toUpperCase();
-            document.querySelectorAll('.public-post-avatar').forEach((avatar) => {
-                avatar.textContent = profile.name.split(/\s+/).map((part) => part[0]).slice(0, 2).join('').toUpperCase();
-            });
-            document.querySelectorAll('.public-post-author').forEach((author) => {
-                author.textContent = profile.name;
-            });
-            document.querySelector('.public-post-caption').textContent = profile.post;
+        const loggedUser = JSON.parse(localStorage.getItem('pallasUser') || '{}');
+        const loggedUserId = loggedUser.usuario_id?._id || loggedUser.usuario_id
+            || loggedUser.perfil?.usuario_id?._id || loggedUser.perfil?.usuario_id
+            || loggedUser.perfil?._id || loggedUser._id || '';
+
+        let targetUserId = '';
+        let isFollowing = false;
+
+        async function loadProfile() {
+            if (!profileId) {
+                profileError.hidden = false;
+                return;
+            }
+
+            try {
+                const queryParam = loggedUserId ? `?usuario_logado=${encodeURIComponent(loggedUserId)}` : '';
+                const res = await fetch(`/api/perfil-publico/${encodeURIComponent(profileId)}${queryParam}`);
+                const json = await res.json();
+
+                if (!res.ok || !json.sucesso || !json.dados) {
+                    profileError.hidden = false;
+                    return;
+                }
+
+                const data = json.dados;
+                const tipo = json.tipo || (data.nome_fantasia ? 'Empresa' : 'Artista');
+                const name = data.nome_artistico || data.nome || data.nome_fantasia || data.razao_social || 'Usuário';
+                const handle = data.usuario_id?.login ? `@${data.usuario_id.login}` : `@${name.toLowerCase().replace(/\s+/g, '')}`;
+                const bio = data.bio || 'Sem biografia informada.';
+                const area = Array.isArray(data.tipo_arte) && data.tipo_arte.length > 0 ? data.tipo_arte.join(', ') : 'Artes Visuais';
+                const city = data.endereco?.cidade || 'Não informada';
+                const state = data.endereco?.uf || 'BR';
+
+                targetUserId = String(data.usuario_id?._id || data.usuario_id || data._id);
+
+                profilePage.hidden = false;
+                document.title = `${name} | Pallas Ateliê`;
+                document.querySelector('#public-name').textContent = name;
+                document.querySelector('#public-handle').textContent = `${handle} • ${tipo}`;
+                document.querySelector('#public-bio').textContent = bio;
+                document.querySelector('#public-type').textContent = tipo;
+                document.querySelector('#public-area').textContent = area;
+                document.querySelector('#public-city').textContent = city;
+                document.querySelector('#public-state').textContent = state;
+                loadProfilePublications(targetUserId);
+
+                // Contadores dinâmicos reais do banco
+                if (json.stats) {
+                    document.querySelector('#public-post-count').textContent = json.stats.posts || 0;
+                    document.querySelector('#public-followers').textContent = json.stats.seguidores || 0;
+                    document.querySelector('#public-following').textContent = json.stats.seguindo || 0;
+                    isFollowing = Boolean(json.stats.jaSegue);
+                }
+
+                // Gerenciar botão Seguir
+                const followBtn = document.querySelector('#btn-follow');
+                if (targetUserId === loggedUserId) {
+                    followBtn.style.display = 'none'; // Não faz sentido seguir a si mesmo
+                } else {
+                    updateFollowButton();
+                    followBtn.addEventListener('click', handleToggleFollow);
+                }
+
+                const avatarEl = document.querySelector('#public-avatar');
+                const initial = name.charAt(0).toUpperCase();
+                if (data.avatar) {
+                    avatarEl.innerHTML = `<img src="${data.avatar}" style="width:100%;height:100%;object-fit:cover;" alt="Avatar">`;
+                } else {
+                    avatarEl.textContent = initial;
+                }
+
+                if (data.cover) {
+                    const coverEl = document.querySelector('#public-cover');
+                    if (coverEl) coverEl.style.backgroundImage = `url("${data.cover}")`;
+                }
+
+            } catch (err) {
+                console.error('Erro ao buscar perfil público:', err);
+                profileError.hidden = false;
+            }
         }
+
+        function updateFollowButton() {
+            const btn = document.querySelector('#btn-follow');
+            const txt = document.querySelector('#follow-text');
+            if (isFollowing) {
+                btn.classList.add('perfil-btn-secondary');
+                btn.querySelector('i').className = 'bi bi-person-check-fill';
+                txt.textContent = 'Seguindo';
+            } else {
+                btn.classList.remove('perfil-btn-secondary');
+                btn.querySelector('i').className = 'bi bi-person-plus-fill';
+                txt.textContent = 'Seguir';
+            }
+        }
+
+        async function handleToggleFollow() {
+            if (!loggedUserId) {
+                alert('Você precisa estar conectado para seguir este perfil.');
+                window.location.href = 'entrar.html';
+                return;
+            }
+
+            const followBtn = document.querySelector('#btn-follow');
+            followBtn.disabled = true;
+
+            try {
+                const res = await fetch(`/api/usuarios/${targetUserId}/seguir`, {
+                    method: 'POST',
+                    headers: { 'Content-Type': 'application/json' },
+                    body: JSON.stringify({ seguidor_id: loggedUserId })
+                });
+                const result = await res.json();
+                if (res.ok && result.sucesso && result.dados) {
+                    isFollowing = result.dados.seguindo;
+                    document.querySelector('#public-followers').textContent = result.dados.totalSeguidores;
+                    document.querySelector('#public-following').textContent = result.dados.totalSeguindo;
+                    updateFollowButton();
+                } else {
+                    alert(result.mensagem || 'Não foi possível completar a ação.');
+                }
+            } catch (e) {
+                console.error('Erro ao seguir usuário:', e);
+            } finally {
+                followBtn.disabled = false;
+            }
+        }
+
+        loadProfile();
+
+        const relationsDialog = document.getElementById('followers-dialog');
+        const relationsList = document.getElementById('followers-list');
+        const relationsTitle = document.getElementById('followers-dialog-title');
+
+        async function openRelationsList(type) {
+            if (!targetUserId) return;
+            relationsTitle.textContent = type === 'seguidores' ? 'Seguidores' : 'Seguindo';
+            relationsList.innerHTML = '<p class="followers-list-message">Carregando...</p>';
+            relationsDialog.showModal();
+
+            try {
+                const response = await fetch(`/api/usuarios/${encodeURIComponent(targetUserId)}/relacoes/${type}`);
+                const result = await response.json();
+                if (!response.ok || !result.sucesso || !Array.isArray(result.dados)) {
+                    throw new Error(result.mensagem || 'Não foi possível carregar a lista.');
+                }
+
+                if (result.dados.length === 0) {
+                    relationsList.innerHTML = '<p class="followers-list-message">Ninguém por aqui ainda.</p>';
+                    return;
+                }
+
+                relationsList.replaceChildren(...result.dados.map((person) => {
+                    const link = document.createElement('a');
+                    link.className = 'followers-list-item';
+                    link.href = `perfil-publico.html?id=${encodeURIComponent(person.id)}`;
+
+                    const avatar = document.createElement('div');
+                    avatar.className = 'avatar followers-list-avatar';
+                    if (person.avatar) {
+                        const image = document.createElement('img');
+                        image.src = person.avatar;
+                        image.alt = '';
+                        avatar.appendChild(image);
+                    } else {
+                        avatar.textContent = (person.nome || 'U').charAt(0).toUpperCase();
+                    }
+
+                    const identity = document.createElement('div');
+                    identity.className = 'followers-list-identity';
+                    const name = document.createElement('strong');
+                    name.textContent = person.nome;
+                    const login = document.createElement('span');
+                    login.textContent = person.login;
+                    identity.append(name, login);
+                    link.append(avatar, identity);
+                    return link;
+                }));
+            } catch (error) {
+                console.error('Erro ao carregar seguidores/seguindo:', error);
+                relationsList.innerHTML = '<p class="followers-list-message">Não foi possível carregar a lista. Tente novamente.</p>';
+            }
+        }
+
+        document.querySelectorAll('[data-relation]').forEach((button) => {
+            button.addEventListener('click', () => openRelationsList(button.dataset.relation));
+        });
+        relationsDialog.querySelector('.followers-dialog-close').addEventListener('click', () => relationsDialog.close());
+        relationsDialog.addEventListener('click', (event) => {
+            if (event.target === relationsDialog) relationsDialog.close();
+        });
 
         const userType = localStorage.getItem('pallasUserType');
         if (userType === 'empresa') {

@@ -1,4 +1,4 @@
-require('dotenv').config();
+﻿require('dotenv').config();
 const express = require('express');
 const path = require('path');
 const mongoose = require('mongoose');
@@ -13,16 +13,18 @@ connectDB();
 // Caminho para a pasta public com os arquivos HTML
 const publicPath = path.join(__dirname, 'public');
 
-// Middlewares para JSON e arquivos estáticos
-app.use(express.json());
-app.use(express.urlencoded({ extended: true }));
+// Middlewares para JSON (limite aumentado para 15mb para permitir upload e compressao via sharp) e arquivos estaticos
+app.use(express.json({ limit: '15mb' }));
+app.use(express.urlencoded({ extended: true, limit: '15mb' }));
 app.use(express.static(publicPath));
 
 // Rotas da API conectadas ao MongoDB
 app.use('/api/auth', require('./src/routes/authRoutes'));
 app.use('/api', require('./src/routes/perfilRoutes'));
+app.use('/api/publicacoes', require('./src/routes/publicacaoRoutes'));
+app.use('/api/notificacoes', require('./src/routes/notificacaoRoutes'));
 
-// Endpoint para verificar status da API e conexão do banco
+// Endpoint para verificar status da API e conexao do banco
 app.get('/api/status', (req, res) => {
   const dbStatusMap = {
     0: 'desconectado',
@@ -38,7 +40,7 @@ app.get('/api/status', (req, res) => {
   });
 });
 
-// Rota para a página inicial
+// Rota para a pagina inicial
 app.get('/', (req, res) => {
   res.sendFile(path.join(publicPath, 'home.html'));
 });
@@ -80,12 +82,12 @@ app.get('/entrar.html', (req, res) => {
   res.sendFile(path.join(publicPath, 'entrar.html'));
 });
 
-// Rota para página sobre
+// Rota para pagina sobre
 app.get('/sobre', (req, res) => {
   res.sendFile(path.join(publicPath, 'sobre.html'));
 });
 
-// Rota para página contato
+// Rota para pagina contato
 app.get('/contato', (req, res) => {
   res.sendFile(path.join(publicPath, 'contato.html'));
 });

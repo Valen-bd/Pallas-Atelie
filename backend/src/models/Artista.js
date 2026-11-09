@@ -49,6 +49,20 @@ const artistaSchema = new mongoose.Schema({
     trim: true,
     maxlength: 500
   },
+  bio: {
+    type: String,
+    trim: true,
+    maxlength: 500,
+    default: ''
+  },
+  avatar: {
+    type: String,
+    default: ''
+  },
+  cover: {
+    type: String,
+    default: ''
+  },
   tipo_arte: {
     type: [String],
     default: []

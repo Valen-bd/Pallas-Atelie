@@ -1,4 +1,4 @@
-<!DOCTYPE html>
+﻿<!DOCTYPE html>
 <html lang="pt-br">
 <head>
 	<meta charset="UTF-8">
@@ -26,7 +26,7 @@
 				<a href="propostas-empresa.html" class="icon-badge propostas-empresa-icon" aria-label="Propostas para empresas"><i class="bi bi-megaphone" aria-hidden="true"></i></a>
 				<a href="propostas-artista.html" class="icon-badge propostas-artista-icon" aria-label="Propostas para artistas"><i class="bi bi-megaphone" aria-hidden="true"></i></a>
 				<a href="perfil.html" class="profile-mini">
-					<div class="avatar small" id="header-avatar">U</div>
+					<div class="avatar small" id="header-avatar" style="overflow:hidden;display:flex;align-items:center;justify-content:center;">U</div>
 					<span id="header-name">Usuário</span>
 				</a>
 			</div>
@@ -42,7 +42,7 @@
 
 		<form class="new-post-form" id="new-post-form">
 			<div class="new-post-author">
-				<div class="avatar" id="post-avatar">U</div>
+				<div class="avatar" id="post-avatar" style="overflow:hidden;display:flex;align-items:center;justify-content:center;">U</div>
 				<div>
 					<strong id="post-author-name">Usuário</strong>
 					<span>Publicação visível para a comunidade</span>
@@ -66,7 +66,7 @@
 			<label class="image-upload" for="post-image" id="image-upload-area">
 				<i class="bi bi-image" aria-hidden="true"></i>
 				<strong>Adicionar uma imagem</strong>
-				<span>JPG, PNG ou WEBP, até 2 MB</span>
+				<span>JPG, PNG ou WEBP, até 10 MB (compactação automática)</span>
 				<input id="post-image" name="image" type="file" accept="image/jpeg,image/png,image/webp">
 			</label>
 			<div class="image-preview-wrap" id="image-preview-wrap" hidden>
@@ -76,7 +76,7 @@
 			<p class="new-post-message" id="new-post-message" role="status" aria-live="polite"></p>
 			<div class="new-post-footer">
 				<a href="inicial.html" class="new-post-cancel">Cancelar</a>
-				<button type="submit" class="new-post-submit"><i class="bi bi-send" aria-hidden="true"></i> Publicar</button>
+				<button type="submit" class="new-post-submit" id="btn-publish"><i class="bi bi-send" aria-hidden="true"></i> Publicar</button>
 			</div>
 		</form>
 	</main>
@@ -93,13 +93,26 @@
 			if (empresaIcon) empresaIcon.style.display = 'none';
 		}
 
-		const profile = JSON.parse(localStorage.getItem('pallasProfile') || 'null');
-		const authorName = profile?.nome?.trim() || 'Usuário';
+		const userData = JSON.parse(localStorage.getItem('pallasUser') || '{}');
+		const currentUserId = userData.usuario_id || userData.perfil?.usuario_id?._id
+			|| userData.perfil?.usuario_id || userData.perfil?._id || userData._id;
+		const profileKey = currentUserId ? `pallasProfile_${currentUserId}` : 'pallasProfile';
+		const profile = JSON.parse(localStorage.getItem(profileKey) || localStorage.getItem('pallasProfile') || 'null');
+		const accountProfile = userData.perfil && typeof userData.perfil === 'object' ? userData.perfil : userData;
+		const authorName = profile?.nome?.trim() || accountProfile.nome_artistico || accountProfile.nome
+			|| accountProfile.nome_fantasia || userData.login || 'Usuário';
 		const authorInitial = authorName.charAt(0).toUpperCase();
+		const authorAvatar = profile?.avatar || accountProfile.avatar || userData.avatar || '';
+
 		document.querySelector('#header-name').textContent = authorName;
 		document.querySelector('#post-author-name').textContent = authorName;
+
 		document.querySelectorAll('#header-avatar, #post-avatar').forEach((avatar) => {
-			avatar.textContent = authorInitial;
+			if (authorAvatar) {
+				avatar.innerHTML = `<img src="${authorAvatar}" style="width:100%;height:100%;border-radius:50%;object-fit:cover;" alt="Avatar">`;
+			} else {
+				avatar.textContent = authorInitial;
+			}
 		});
 
 		const form = document.querySelector('#new-post-form');
@@ -109,6 +122,7 @@
 		const preview = document.querySelector('#image-preview');
 		const uploadArea = document.querySelector('#image-upload-area');
 		const message = document.querySelector('#new-post-message');
+		const publishBtn = document.querySelector('#btn-publish');
 		let lastScrollTop = 0;
 
 		window.addEventListener('scroll', () => {
@@ -125,64 +139,132 @@
 			document.querySelector('#caption-count').textContent = `${caption.value.length}/500`;
 		});
 
-		imageInput.addEventListener('change', () => {
+		function compressImageFile(file, maxWidth = 1200, maxHeight = 900, quality = 0.8) {
+			return new Promise((resolve, reject) => {
+				const reader = new FileReader();
+				reader.onload = (e) => {
+					const img = new Image();
+					img.onload = () => {
+						let width = img.width;
+						let height = img.height;
+
+						if (width > maxWidth || height > maxHeight) {
+							if (width / height > maxWidth / maxHeight) {
+								height = Math.round((height * maxWidth) / width);
+								width = maxWidth;
+							} else {
+								width = Math.round((width * maxHeight) / height);
+								height = maxHeight;
+							}
+						}
+
+						const canvas = document.createElement('canvas');
+						canvas.width = width;
+						canvas.height = height;
+						const ctx = canvas.getContext('2d');
+						ctx.drawImage(img, 0, 0, width, height);
+
+						let compressed = canvas.toDataURL('image/webp', quality);
+						if (!compressed.startsWith('data:image/webp')) {
+							compressed = canvas.toDataURL('image/jpeg', quality);
+						}
+						resolve(compressed);
+					};
+					img.onerror = () => reject(new Error('Erro na imagem.'));
+					img.src = e.target.result;
+				};
+				reader.onerror = () => reject(new Error('Erro ao ler arquivo.'));
+				reader.readAsDataURL(file);
+			});
+		}
+
+		let compressedImage = '';
+
+		imageInput.addEventListener('change', async () => {
 			const image = imageInput.files[0];
 			message.textContent = '';
 			if (!image) return;
-			if (!['image/jpeg', 'image/png', 'image/webp'].includes(image.type) || image.size > 2 * 1024 * 1024) {
-				message.textContent = 'Escolha uma imagem JPG, PNG ou WEBP de até 2 MB.';
+			if (!['image/jpeg', 'image/png', 'image/webp'].includes(image.type) || image.size > 10 * 1024 * 1024) {
+				message.textContent = 'Escolha uma imagem JPG, PNG ou WEBP de até 10 MB.';
 				imageInput.value = '';
 				return;
 			}
-			preview.src = URL.createObjectURL(image);
-			previewWrap.hidden = false;
-			uploadArea.hidden = true;
+
+			try {
+				compressedImage = await compressImageFile(image);
+				preview.src = compressedImage;
+				previewWrap.hidden = false;
+				uploadArea.hidden = true;
+			} catch (err) {
+				message.textContent = 'Não foi possível carregar essa imagem.';
+			}
 		});
 
 		document.querySelector('#remove-image').addEventListener('click', () => {
-			URL.revokeObjectURL(preview.src);
+			compressedImage = '';
 			preview.removeAttribute('src');
 			imageInput.value = '';
 			previewWrap.hidden = true;
 			uploadArea.hidden = false;
 		});
 
-		form.addEventListener('submit', (event) => {
+		form.addEventListener('submit', async (event) => {
 			event.preventDefault();
-			const image = imageInput.files[0];
-			const publish = (imageData = '') => {
+
+			if (!caption.value.trim() && !compressedImage) {
+				caption.focus();
+				return;
+			}
+
+			if (!currentUserId) {
+				alert('Você precisa estar autenticado para publicar.');
+				window.location.href = 'entrar.html';
+				return;
+			}
+
+			publishBtn.disabled = true;
+			publishBtn.innerHTML = 'Publicando...';
+
+			try {
+				const response = await fetch('/api/publicacoes', {
+					method: 'POST',
+					headers: { 'Content-Type': 'application/json' },
+					body: JSON.stringify({
+						usuario_id: currentUserId,
+						legenda: caption.value.trim(),
+						categoria: document.querySelector('#post-category').value,
+						imagem: compressedImage
+					})
+				});
+
+				const result = await response.json();
+				if (!response.ok || !result.sucesso) {
+					throw new Error(result.mensagem || 'Falha ao salvar publicação');
+				}
+
+				// Salva também localmente como cache
 				const posts = JSON.parse(localStorage.getItem('pallasPosts') || '[]');
 				posts.unshift({
-					id: `post-${Date.now()}`,
+					id: result.dados?._id || `post-${Date.now()}`,
+					usuario_id: currentUserId,
 					caption: caption.value.trim(),
 					category: document.querySelector('#post-category').value,
-					image: imageData,
+					image: compressedImage,
 					author: authorName,
 					initial: authorInitial,
+					avatar: authorAvatar,
 					createdAt: new Date().toISOString()
 				});
 				try {
 					localStorage.setItem('pallasPosts', JSON.stringify(posts));
-					window.location.href = 'inicial.html';
-				} catch {
-					message.textContent = 'Não foi possível salvar a publicação. Remova a imagem ou escolha um arquivo menor.';
-				}
-			};
+				} catch (e) {}
 
-			if (!caption.value.trim()) {
-				caption.focus();
-				return;
+				window.location.href = 'inicial.html';
+			} catch (e) {
+				message.textContent = 'Erro ao publicar: ' + e.message;
+				publishBtn.disabled = false;
+				publishBtn.innerHTML = '<i class="bi bi-send" aria-hidden="true"></i> Publicar';
 			}
-			if (!image) {
-				publish();
-				return;
-			}
-			const reader = new FileReader();
-			reader.addEventListener('load', () => publish(reader.result));
-			reader.addEventListener('error', () => {
-				message.textContent = 'Não foi possível carregar essa imagem. Tente selecionar outro arquivo.';
-			});
-			reader.readAsDataURL(image);
 		});
 	</script>
 </body>

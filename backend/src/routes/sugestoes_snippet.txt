@@ -1,0 +1,64 @@
+﻿// Obter detalhes de um perfil público por ID de usuário ou do perfil
+router.get('/perfil-publico/:id', async (req, res) => {
+  try {
+    const { id } = req.params;
+    let perfil = await Artista.findOne({ $or: [{ _id: id }, { usuario_id: id }] }).populate('usuario_id', 'login');
+    let tipo = 'artista';
+
+    if (!perfil) {
+      perfil = await Empresa.findOne({ $or: [{ _id: id }, { usuario_id: id }] }).populate('usuario_id', 'login');
+      tipo = 'empresa';
+    }
+
+    if (!perfil) {
+      return res.status(404).json({ sucesso: false, mensagem: 'Perfil não encontrado.' });
+    }
+
+    return res.json({ sucesso: true, tipo, dados: perfil });
+  } catch (err) {
+    return res.status(500).json({ sucesso: false, mensagem: err.message });
+  }
+});
+
+// Endpoint unificado para sugestões de perfis reais
+router.get('/sugestoes', async (req, res) => {
+  try {
+    const { exceto } = req.query; // ID do usuario logado para nao sugerir a si mesmo
+
+    const queryFiltro = exceto ? { usuario_id: { $ne: exceto } } : {};
+
+    const [artistas, empresas] = await Promise.all([
+      Artista.find(queryFiltro)
+        .populate('usuario_id', 'login')
+        .sort({ criado_em: -1 })
+        .limit(10),
+      Empresa.find(queryFiltro)
+        .populate('usuario_id', 'login')
+        .sort({ criado_em: -1 })
+        .limit(10)
+    ]);
+
+    const formatados = [
+      ...artistas.map(a => ({
+        id: a.usuario_id?._id || a.usuario_id || a._id,
+        tipo: 'Artista',
+        nome: a.nome_artistico || a.nome || 'Artista',
+        login: a.usuario_id?.login ? `@${a.usuario_id.login}` : '',
+        avatar: a.avatar || '',
+        detalhe: (a.tipo_arte && a.tipo_arte.length > 0) ? a.tipo_arte.join(', ') : 'Artes Visuais'
+      })),
+      ...empresas.map(e => ({
+        id: e.usuario_id?._id || e.usuario_id || e._id,
+        tipo: 'Empresa',
+        nome: e.nome_fantasia || e.razao_social || 'Empresa',
+        login: e.usuario_id?.login ? `@${e.usuario_id.login}` : '',
+        avatar: e.avatar || '',
+        detalhe: (e.tipo_arte && e.tipo_arte.length > 0) ? e.tipo_arte.join(', ') : 'Estúdio / Empresa'
+      }))
+    ];
+
+    return res.json({ sucesso: true, dados: formatados });
+  } catch (err) {
+    return res.status(500).json({ sucesso: false, mensagem: err.message });
+  }
+});

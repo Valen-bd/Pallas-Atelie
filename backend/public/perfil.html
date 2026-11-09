@@ -48,7 +48,7 @@
                 <div class="perfil-actions">
                     <a href="meuportifolio.html" class="perfil-btn perfil-btn-secondary">Meu portfólio</a>
                     <a href="editarperfil.html" class="perfil-btn">Editar perfil</a>
-                    <a href="index.html" class="perfil-btn perfil-btn-secondary">Sair</a>
+                    <a href="index.html" class="perfil-btn perfil-btn-secondary" onclick="localStorage.clear();">Sair</a>
                 </div>
             </div>
 
@@ -58,87 +58,51 @@
 
             <div class="perfil-stats">
                 <div class="stat-card">
-                    <strong>10</strong>
+                    <strong id="stat-posts">0</strong>
                     <span>Posts</span>
                 </div>
-                <div class="stat-card">
-                    <strong>10</strong>
+                <button class="stat-card" id="stat-followers-button" type="button" aria-controls="followers-dialog" data-relation="seguidores">
+                    <strong id="stat-followers">0</strong>
                     <span>Seguidores</span>
-                </div>
-                <div class="stat-card">
-                    <strong>10</strong>
+                </button>
+                <button class="stat-card" id="stat-following-button" type="button" aria-controls="followers-dialog" data-relation="seguindo">
+                    <strong id="stat-following">0</strong>
                     <span>Seguindo</span>
-                </div>
+                </button>
             </div>
+
+            <dialog class="followers-dialog" id="followers-dialog" aria-labelledby="followers-dialog-title">
+                <div class="followers-dialog-header">
+                    <h2 id="followers-dialog-title">Seguidores</h2>
+                    <button class="followers-dialog-close" type="button" aria-label="Fechar lista">&times;</button>
+                </div>
+                <div class="followers-list" id="followers-list" aria-live="polite"></div>
+            </dialog>
 
             <div class="perfil-content-grid">
                 <div class="perfil-info-panel">
                     <h3>Sobre</h3>
                     <div class="perfil-lista">
-                        <p><span class="perfil-label">País:</span> Brasil</p>
-                        <p><span class="perfil-label">Estado:</span> São Paulo</p>
-                        <p><span class="perfil-label">Cidade:</span> São Paulo</p>
-                        <p><span class="perfil-label">E-mail:</span> usuario@email.com</p>
-                        <p><span class="perfil-label">Número:</span> (00) 00000-0000</p>
-                        <p><span class="perfil-label">Tipo de arte:</span> Desenho digital</p>
+                        <p><span class="perfil-label">País:</span> <span id="about-country">Não informado</span></p>
+                        <p><span class="perfil-label">Estado:</span> <span id="about-state">Não informado</span></p>
+                        <p><span class="perfil-label">Cidade:</span> <span id="about-city">Não informado</span></p>
+                        <p><span class="perfil-label">E-mail:</span> <span id="about-email">Não informado</span></p>
+                        <p><span class="perfil-label">Número:</span> <span id="about-phone">Não informado</span></p>
+                        <p><span class="perfil-label">Tipo de arte:</span> <span id="about-art">Não informado</span></p>
                     </div>
                 </div>
 
                 <div class="perfil-feed-panel">
                     <h3>Publicações recentes</h3>
-
-                    <article class="post-card profile-post" data-post-id="perfil-1">
-                        <div class="post-header">
-                            <div class="post-user">
-                                <div class="avatar small">U</div>
-                                <div>
-                                    <strong>Usuário</strong>
-                                    <p>Hoje</p>
-                                </div>
-                            </div>
-                            <span class="tag">Novo projeto</span>
-                        </div>
-                        <p>Legenda</p>
-                        <img src="images/pallas2.png" alt="Post artístico">
-                        <div class="post-engagement">
-                            <button class="post-action like-button" type="button" aria-label="Curtir arte" aria-pressed="false"><i class="bi bi-heart" aria-hidden="true"></i> Curtir <span class="like-count">0</span></button>
-                            <span class="post-metric"><i class="bi bi-chat" aria-hidden="true"></i> <span class="comment-count">0</span> comentários</span>
-                        </div>
-                        <ul class="comments-list" aria-live="polite"></ul>
-                        <form class="comment-form">
-                            <input type="text" placeholder="Escreva um comentário..." aria-label="Comentário" maxlength="160">
-                            <button class="post-action" type="submit" aria-label="Enviar comentário"><i class="bi bi-send" aria-hidden="true"></i></button>
-                        </form>
-                    </article>
-
-                    <article class="post-card profile-post" data-post-id="perfil-2">
-                        <div class="post-header">
-                            <div class="post-user">
-                                <div class="avatar small">U</div>
-                                <div>
-                                    <strong>Usuário</strong>
-                                    <p>Ontem</p>
-                                </div>
-                            </div>
-                            <span class="tag alt">Em destaque</span>
-                        </div>
-                        <p>Legenda</p>
-                        <img src="images/pallas2.png" alt="Post artístico">
-                        <div class="post-engagement">
-                            <button class="post-action like-button" type="button" aria-label="Curtir arte" aria-pressed="false"><i class="bi bi-heart" aria-hidden="true"></i> Curtir <span class="like-count">0</span></button>
-                            <span class="post-metric"><i class="bi bi-chat" aria-hidden="true"></i> <span class="comment-count">0</span> comentários</span>
-                        </div>
-                        <ul class="comments-list" aria-live="polite"></ul>
-                        <form class="comment-form">
-                            <input type="text" placeholder="Escreva um comentário..." aria-label="Comentário" maxlength="160">
-                            <button class="post-action" type="submit" aria-label="Enviar comentário"><i class="bi bi-send" aria-hidden="true"></i></button>
-                        </form>
-                    </article>
+                    <div class="profile-publications" id="profile-publications" aria-live="polite">
+                        <p class="profile-publications-message">Carregando publicações...</p>
+                    </div>
                 </div>
             </div>
         </section>
     </main>
 
+    <script src="./js/profile-publications.js"></script>
     <script>
         const header = document.querySelector('.social-header');
         const userType = localStorage.getItem('pallasUserType');
@@ -150,43 +114,155 @@
             const empresaIcon = document.querySelector('.propostas-empresa-icon');
             if (empresaIcon) empresaIcon.style.display = 'none';
         }
-        const savedProfile = JSON.parse(localStorage.getItem('pallasProfile') || 'null');
-        const profileName = savedProfile?.nome?.trim() || 'Usuário';
-        const profileInitial = profileName.charAt(0).toUpperCase();
-        document.querySelectorAll('.avatar').forEach((avatar) => {
-            avatar.textContent = profileInitial;
-            if (savedProfile?.avatar) {
-                const image = document.createElement('img');
-                image.src = savedProfile.avatar;
-                image.alt = `Foto de perfil de ${profileName}`;
-                avatar.replaceChildren(image);
-                avatar.classList.add('has-image');
-            }
-        });
-        if (savedProfile?.cover) {
-            document.querySelector('.perfil-cover').style.backgroundImage = `url("${savedProfile.cover}")`;
-        }
-        if (savedProfile) {
-            document.querySelector('.perfil-identidade h1').textContent = profileName;
-            document.querySelector('.perfil-identidade p').textContent = `${savedProfile.usuario} • ${savedProfile.arte}`;
-            document.querySelector('.perfil-bio-box p').textContent = savedProfile.bio;
 
-            const profileValues = [savedProfile.pais, savedProfile.estado, savedProfile.cidade, savedProfile.email, savedProfile.numero, savedProfile.arte];
-            document.querySelectorAll('.perfil-lista p').forEach((item, index) => {
-                item.lastChild.textContent = ` ${profileValues[index]}`;
+        let userData = {};
+        try {
+            userData = JSON.parse(localStorage.getItem('pallasUser') || '{}');
+        } catch (err) {
+            console.error('Não foi possível ler os dados da sessão:', err);
+        }
+
+        const usuarioId = userData.usuario_id || userData.perfil?.usuario_id?._id
+            || userData.perfil?.usuario_id || userData.perfil?._id || userData._id;
+        const perfilType = userType || userData.tipo_perfil || 'artista';
+        loadProfilePublications(usuarioId);
+
+        function setAboutInfo(profile = {}) {
+            const address = profile.endereco || {};
+            const artTypes = profile.tipo_arte || profile.arte || '';
+            const values = {
+                country: profile.pais || address.pais,
+                state: profile.estado || address.uf,
+                city: profile.cidade || address.cidade,
+                email: profile.email || userData.email,
+                phone: profile.fone || profile.numero,
+                art: Array.isArray(artTypes) ? artTypes.join(', ') : artTypes
+            };
+
+            Object.entries(values).forEach(([key, value]) => {
+                const element = document.getElementById(`about-${key}`);
+                if (element && value) element.textContent = value;
             });
         }
-        let lastScrollTop = 0;
 
+        const profileKey = usuarioId ? `pallasProfile_${usuarioId}` : 'pallasProfile';
+        try {
+            const cachedProfile = JSON.parse(localStorage.getItem(profileKey) || 'null');
+            setAboutInfo(cachedProfile || userData.perfil || userData);
+        } catch (err) {
+            console.error('Não foi possível ler os dados locais do perfil:', err);
+            setAboutInfo(userData.perfil || userData);
+        }
+
+        async function loadAboutInfo() {
+            if (!usuarioId) return;
+
+            try {
+                const response = await fetch(`/api/perfil/${encodeURIComponent(perfilType)}/${encodeURIComponent(usuarioId)}`);
+                const result = await response.json();
+                if (!response.ok || !result.sucesso || !result.dados) {
+                    throw new Error(result.mensagem || 'Não foi possível carregar os dados do perfil.');
+                }
+                setAboutInfo(result.dados);
+            } catch (err) {
+                console.error('Erro ao carregar informações da seção Sobre:', err);
+            }
+        }
+        loadAboutInfo();
+
+        // Carregar estatísticas reais do usuário logado (posts, seguidores e seguindo)
+        async function loadUserStats() {
+            if (!usuarioId) return;
+
+            try {
+                const res = await fetch(`/api/usuarios/${usuarioId}/stats`);
+                const json = await res.json();
+                if (res.ok && json.sucesso && json.dados) {
+                    const localPosts = JSON.parse(localStorage.getItem('pallasPosts') || '[]');
+                    const totalPosts = Math.max(json.dados.posts || 0, localPosts.length);
+
+                    document.getElementById('stat-posts').textContent = totalPosts;
+                    document.getElementById('stat-followers').textContent = json.dados.seguidores || 0;
+                    document.getElementById('stat-following').textContent = json.dados.seguindo || 0;
+                }
+            } catch (err) {
+                console.error('Erro ao buscar estatísticas do perfil:', err);
+            }
+        }
+        loadUserStats();
+
+        const relationsDialog = document.getElementById('followers-dialog');
+        const relationsList = document.getElementById('followers-list');
+        const relationsTitle = document.getElementById('followers-dialog-title');
+
+        async function openRelationsList(type) {
+            relationsTitle.textContent = type === 'seguidores' ? 'Seguidores' : 'Seguindo';
+            relationsList.innerHTML = '<p class="followers-list-message">Carregando...</p>';
+            relationsDialog.showModal();
+
+            try {
+                const response = await fetch(`/api/usuarios/${encodeURIComponent(usuarioId)}/relacoes/${type}`);
+                const result = await response.json();
+                if (!response.ok || !result.sucesso || !Array.isArray(result.dados)) {
+                    throw new Error(result.mensagem || 'Não foi possível carregar a lista.');
+                }
+
+                if (result.dados.length === 0) {
+                    relationsList.innerHTML = '<p class="followers-list-message">Ninguém por aqui ainda.</p>';
+                    return;
+                }
+
+                relationsList.replaceChildren(...result.dados.map((person) => {
+                    const link = document.createElement('a');
+                    link.className = 'followers-list-item';
+                    link.href = `perfil-publico.html?id=${encodeURIComponent(person.id)}`;
+
+                    const avatar = document.createElement('div');
+                    avatar.className = 'avatar followers-list-avatar';
+                    if (person.avatar) {
+                        const image = document.createElement('img');
+                        image.src = person.avatar;
+                        image.alt = '';
+                        avatar.appendChild(image);
+                    } else {
+                        avatar.textContent = (person.nome || 'U').charAt(0).toUpperCase();
+                    }
+
+                    const identity = document.createElement('div');
+                    identity.className = 'followers-list-identity';
+                    const name = document.createElement('strong');
+                    name.textContent = person.nome;
+                    const login = document.createElement('span');
+                    login.textContent = person.login;
+                    identity.append(name, login);
+                    link.append(avatar, identity);
+                    return link;
+                }));
+            } catch (error) {
+                console.error('Erro ao carregar seguidores/seguindo:', error);
+                relationsList.innerHTML = '<p class="followers-list-message">Não foi possível carregar a lista. Tente novamente.</p>';
+            }
+        }
+
+        document.querySelectorAll('[data-relation]').forEach((button) => {
+            button.addEventListener('click', () => {
+                if (!usuarioId) return;
+                openRelationsList(button.dataset.relation);
+            });
+        });
+        relationsDialog.querySelector('.followers-dialog-close').addEventListener('click', () => relationsDialog.close());
+        relationsDialog.addEventListener('click', (event) => {
+            if (event.target === relationsDialog) relationsDialog.close();
+        });
+
+        let lastScrollTop = 0;
         window.addEventListener('scroll', () => {
             const currentScroll = window.scrollY;
-
             if (currentScroll > 80 && currentScroll > lastScrollTop) {
                 header.classList.add('is-hidden');
             } else {
                 header.classList.remove('is-hidden');
             }
-
             lastScrollTop = currentScroll <= 0 ? 0 : currentScroll;
         });
     </script>
