@@ -22,7 +22,6 @@ app.use(express.static(publicPath));
 app.use('/api/auth', require('./src/routes/authRoutes'));
 app.use('/api', require('./src/routes/perfilRoutes'));
 app.use('/api/publicacoes', require('./src/routes/publicacaoRoutes'));
-app.use('/api/notificacoes', require('./src/routes/notificacaoRoutes'));
 
 // Endpoint para verificar status da API e conexao do banco
 app.get('/api/status', (req, res) => {
@@ -92,7 +91,11 @@ app.get('/contato', (req, res) => {
   res.sendFile(path.join(publicPath, 'contato.html'));
 });
 
-// Iniciar o servidor
-app.listen(port, () => {
-  console.log(`Servidor rodando em http://localhost:${port}`);
-});
+// Iniciar o servidor apenas em ambiente de desenvolvimento/execucao direta
+if (process.env.NODE_ENV !== 'production' || !process.env.VERCEL) {
+  app.listen(port, () => {
+    console.log(`Servidor rodando em http://localhost:${port}`);
+  });
+}
+
+module.exports = app;
