@@ -1,5 +1,4 @@
-﻿const app = require('../backend/index.js');
+const express = require('express');
+const app = require('../backend/index.js');
 
-module.exports = (req, res) => {
-  return app(req, res);
-};
+module.exports = app;
