@@ -3098,3 +3098,414 @@ body {
                 padding: 1rem;
             }
         }
+
+        @media (max-width: 768px) {
+            body {
+                width: 100%;
+                min-width: 0;
+                background-attachment: scroll;
+            }
+
+            .nav-container {
+                flex-wrap: wrap;
+                justify-content: center;
+                gap: 0;
+                padding: 0.25rem 1rem 0.75rem;
+            }
+
+            .nav-container .logo {
+                width: auto;
+                height: auto;
+            }
+
+            .nav-container #logimagem {
+                width: 100px;
+                height: 68px;
+            }
+
+            .nav-menu {
+                width: 100%;
+                justify-content: center;
+                flex-wrap: wrap;
+                gap: 0.25rem;
+            }
+
+            .nav-link {
+                padding: 0.55rem 0.8rem;
+                font-size: 1rem;
+            }
+
+            .container,
+            .home-page .container,
+            body.register-page .container {
+                width: min(calc(100% - 2rem), 600px);
+                max-width: 600px;
+                margin: 1.25rem auto 2rem;
+                padding: 1.5rem 1.25rem;
+                border-radius: 22px;
+            }
+
+            .social-home {
+                width: min(100% - 1.25rem, 720px);
+                margin: 1rem auto 2rem;
+                padding: 0;
+                gap: 0.85rem;
+            }
+
+            .social-home > *,
+            .social-feed,
+            .social-sidebar,
+            .social-aside {
+                min-width: 0;
+            }
+
+            .perfil-container {
+                width: calc(100% - 1rem);
+                margin: 0.75rem auto 2rem;
+                padding: 0.25rem;
+            }
+
+            .perfil-card {
+                min-height: 0;
+                padding: 1.25rem;
+                border-radius: 22px;
+            }
+
+            .perfil-cover {
+                height: clamp(100px, 28vw, 160px);
+                border-radius: 16px;
+            }
+
+            .perfil-hero {
+                align-items: flex-start;
+                flex-wrap: wrap;
+                padding: 0;
+            }
+
+            .perfil-identidade {
+                min-width: 0;
+                overflow-wrap: anywhere;
+            }
+
+            .perfil-actions {
+                width: 100%;
+                gap: 0.5rem;
+            }
+
+            .perfil-btn {
+                display: inline-flex;
+                min-height: 42px;
+                align-items: center;
+                justify-content: center;
+                padding: 0.6rem 0.85rem;
+                text-align: center;
+            }
+
+            .perfil-content-grid {
+                grid-template-columns: minmax(0, 1fr);
+                gap: 0.8rem;
+            }
+
+            .perfil-info-panel,
+            .perfil-feed-panel {
+                min-width: 0;
+                padding: 1rem;
+            }
+
+            .perfil-lista p {
+                overflow-wrap: anywhere;
+            }
+
+            .perfil-stats {
+                gap: 0.5rem;
+            }
+
+            .stat-card {
+                min-width: 0;
+                padding: 0.75rem 0.4rem;
+                text-align: center;
+            }
+
+            .stat-card span {
+                font-size: 0.82rem;
+            }
+
+            .jobs-page-shell {
+                width: min(100% - 1.25rem, 720px);
+                margin: 1.25rem auto 2rem;
+                padding: 0;
+            }
+
+            .jobs-hero {
+                padding: 1.25rem;
+                border-radius: 22px;
+            }
+
+            .jobs-grid {
+                grid-template-columns: repeat(2, minmax(0, 1fr));
+            }
+
+            .dashboard-page {
+                padding: 0 0.75rem;
+            }
+
+            .dashboard-grid {
+                grid-template-columns: repeat(2, minmax(0, 1fr));
+            }
+
+            .image-viewer {
+                width: calc(100vw - 1rem);
+                max-height: calc(100dvh - 1rem);
+                padding: 3.25rem 0.5rem 0.5rem;
+            }
+
+            .image-viewer img {
+                max-height: calc(100dvh - 5rem);
+            }
+        }
+
+        @media (max-width: 480px) {
+            .nav-container {
+                padding-right: 0.5rem;
+                padding-left: 0.5rem;
+            }
+
+            .nav-container #logimagem {
+                width: 84px;
+                height: 58px;
+            }
+
+            .nav-menu {
+                gap: 0;
+            }
+
+            .nav-link {
+                padding: 0.5rem 0.65rem;
+                font-size: 0.92rem;
+            }
+
+            .container,
+            .home-page .container,
+            body.register-page .container {
+                width: calc(100% - 1.25rem);
+                margin: 0.75rem auto 1.5rem;
+                padding: 1.25rem 1rem;
+                border-radius: 18px;
+            }
+
+            .social-header {
+                padding: 0.55rem 0.65rem;
+            }
+
+            .social-header-content {
+                display: grid;
+                grid-template-columns: minmax(0, 1fr) auto;
+                gap: 0.5rem;
+            }
+
+            .social-header-content > .logo {
+                width: auto;
+                height: auto;
+            }
+
+            .social-header-content #logimagem {
+                width: 76px;
+                height: 54px;
+            }
+
+            .social-header-content > .social-search {
+                grid-column: 1 / -1;
+                grid-row: 2;
+                width: 100%;
+            }
+
+            .social-search input,
+            .discover-page .social-search input {
+                width: 100%;
+                min-width: 0;
+            }
+
+            .social-header-content > .social-actions {
+                justify-content: flex-end;
+                gap: 0.35rem;
+                min-width: 0;
+            }
+
+            .social-actions .icon-badge {
+                width: 36px;
+                height: 36px;
+            }
+
+            .profile-mini {
+                gap: 0.25rem;
+                padding: 0.2rem 0.35rem;
+            }
+
+            .profile-mini > span {
+                display: none;
+            }
+
+            .social-home {
+                width: calc(100% - 1rem);
+                margin-top: 0.65rem;
+            }
+
+            .social-profile,
+            .panel-card,
+            .composer-card,
+            .post-card,
+            .story-card {
+                padding: 0.85rem;
+                border-radius: 18px;
+            }
+
+            .post-header {
+                align-items: flex-start;
+                flex-wrap: wrap;
+            }
+
+            .post-card img {
+                max-height: min(65vh, 360px);
+                object-fit: contain;
+            }
+
+            .perfil-card {
+                padding: 0.85rem;
+                border-radius: 18px;
+            }
+
+            .perfil-cover {
+                height: 100px;
+            }
+
+            .perfil-avatar {
+                width: 68px;
+                height: 68px;
+                font-size: 1.5rem;
+            }
+
+            .perfil-identidade h1 {
+                font-size: 1.15rem;
+                overflow-wrap: anywhere;
+            }
+
+            .perfil-identidade p {
+                font-size: 0.9rem;
+                overflow-wrap: anywhere;
+            }
+
+            .perfil-actions .perfil-btn {
+                flex: 1 1 auto;
+            }
+
+            .perfil-stats {
+                gap: 0.35rem;
+            }
+
+            .stat-card strong {
+                font-size: 1rem;
+            }
+
+            .stat-card span {
+                font-size: 0.72rem;
+            }
+
+            .perfil-info-panel,
+            .perfil-feed-panel {
+                padding: 0.8rem;
+                border-radius: 16px;
+            }
+
+            .discover-container {
+                width: calc(100% - 1rem);
+            }
+
+            .discover-heading,
+            .partnership-list-section {
+                padding: 1rem;
+                border-radius: 18px;
+            }
+
+            .discover-controls {
+                gap: 0.75rem;
+            }
+
+            .discover-filters {
+                width: 100%;
+                flex-wrap: wrap;
+            }
+
+            .discover-filter {
+                padding: 0.55rem 0.8rem;
+            }
+
+            .discover-count {
+                white-space: normal;
+            }
+
+            .new-post-main,
+            .portfolio-container {
+                width: calc(100% - 1rem);
+                margin: 0.75rem auto 2rem;
+            }
+
+            .jobs-page-shell {
+                width: calc(100% - 1rem);
+                margin-top: 0.75rem;
+            }
+
+            .jobs-hero,
+            .partnership-form-panel {
+                padding: 1rem;
+                border-radius: 18px;
+            }
+
+            .jobs-hero h1 {
+                font-size: 1.55rem;
+            }
+
+            .jobs-grid,
+            .dashboard-grid {
+                grid-template-columns: minmax(0, 1fr);
+            }
+
+            .partnership-form-meta,
+            .partnership-form-actions,
+            .activity-header {
+                align-items: flex-start;
+                flex-wrap: wrap;
+            }
+
+            .profile-switcher {
+                grid-template-columns: minmax(0, 1fr);
+            }
+
+            .profile-card {
+                width: 100%;
+                padding: 1.1rem;
+            }
+
+            .profile-card strong {
+                font-size: 1.3rem;
+            }
+
+            .form-input {
+                min-height: 44px;
+                padding: 0.8rem 0.9rem;
+                font-size: 16px;
+            }
+
+            .image-viewer-controls {
+                gap: 0.25rem;
+            }
+
+            .image-viewer-controls button {
+                min-width: 2.25rem;
+                min-height: 2.25rem;
+                padding: 0.3rem 0.45rem;
+            }
+
+            .image-viewer-controls span {
+                min-width: 2.8rem;
+            }
+        }
