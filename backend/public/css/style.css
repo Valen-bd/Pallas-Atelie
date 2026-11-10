@@ -1039,6 +1039,15 @@ body {
             border-radius: 18px;
         }
 
+        .post-card > img {
+            cursor: zoom-in;
+        }
+
+        .post-card > img:focus-visible {
+            outline: 3px solid #414cd0;
+            outline-offset: 3px;
+        }
+
         .post-engagement {
             display: flex;
             align-items: center;
