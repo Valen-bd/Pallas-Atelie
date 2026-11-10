@@ -59,6 +59,13 @@
         <p class="discover-empty" id="profile-empty" hidden>Nenhum perfil encontrado. Tente outro nome ou filtro.</p>
     </main>
 
+    <dialog class="image-viewer" id="image-viewer" aria-label="Visualização da imagem">
+        <button class="image-viewer-close" type="button" aria-label="Fechar visualização">
+            <i class="bi bi-x-lg" aria-hidden="true"></i>
+        </button>
+        <img id="image-viewer-content" alt="">
+    </dialog>
+
     <script>
         const header = document.querySelector('.social-header');
         const userType = localStorage.getItem('pallasUserType');
@@ -77,9 +84,34 @@
         const profileCount = document.querySelector('#profile-count');
         const emptyState = document.querySelector('#profile-empty');
         const statusMessage = document.querySelector('#profile-status');
+        const imageViewer = document.querySelector('#image-viewer');
+        const imageViewerContent = document.querySelector('#image-viewer-content');
         let selectedFilter = 'todos';
         let profileCards = [];
         let currentSearchRequest = 0;
+
+        profileGrid.addEventListener('click', (event) => {
+            const button = event.target.closest('.discover-avatar-button');
+            if (!button) return;
+
+            const image = button.querySelector('img');
+            if (!image) return;
+
+            imageViewerContent.src = image.src;
+            imageViewerContent.alt = button.getAttribute('aria-label');
+            imageViewer.showModal();
+        });
+
+        imageViewer.querySelector('.image-viewer-close').addEventListener('click', () => {
+            imageViewer.close();
+        });
+        imageViewer.addEventListener('click', (event) => {
+            if (event.target === imageViewer) imageViewer.close();
+        });
+        imageViewer.addEventListener('close', () => {
+            imageViewerContent.removeAttribute('src');
+            imageViewerContent.alt = '';
+        });
 
         function readStoredJson(key, fallback) {
             try {
@@ -98,10 +130,14 @@
 
             const top = document.createElement('div');
             top.className = 'discover-card-top';
-            const avatar = document.createElement('div');
+            const avatar = document.createElement(profile.avatar ? 'button' : 'div');
             avatar.className = `avatar discover-avatar ${['avatar-coral', 'avatar-blue', 'avatar-green', 'avatar-violet', 'avatar-gold', 'avatar-pink'][index % 6]}`;
             avatar.setAttribute('aria-hidden', 'true');
             if (profile.avatar) {
+                avatar.type = 'button';
+                avatar.classList.add('discover-avatar-button');
+                avatar.setAttribute('aria-label', `Visualizar foto de ${profile.nome || 'Usuário'}`);
+                avatar.removeAttribute('aria-hidden');
                 const image = document.createElement('img');
                 image.src = profile.avatar;
                 image.alt = '';
