@@ -34,15 +34,15 @@
     </header>
 
     <main class="portfolio-container">
-        <a href="perfil.html" class="portfolio-back"><i class="bi bi-arrow-left" aria-hidden="true"></i> Voltar ao perfil</a>
+        <a href="perfil.html" class="portfolio-back" id="portfolio-back"><i class="bi bi-arrow-left" aria-hidden="true"></i> Voltar ao perfil</a>
         <section class="portfolio-hero">
             <div class="portfolio-hero-copy">
-                <p class="portfolio-eyebrow">GALERIA PESSOAL</p>
-                <h1>Meu portfólio</h1>
+                <p class="portfolio-eyebrow" id="portfolio-eyebrow">GALERIA PESSOAL</p>
+                <h1 id="portfolio-title">Meu portfólio</h1>
                 <p>Um espaço para reunir e compartilhar tudo o que você cria.</p>
             </div>
             <div class="portfolio-artist">
-                <a href="perfil.html" class="portfolio-avatar-link" aria-label="Acessar perfil do usuário">
+                <a href="perfil.html" class="portfolio-avatar-link" id="portfolio-profile-link" aria-label="Acessar perfil do usuário">
                     <div class="avatar portfolio-avatar" id="portfolio-avatar">U</div>
                 </a>
                 <div>
@@ -64,8 +64,8 @@
             <div class="portfolio-grid" id="portfolio-grid" aria-live="polite"></div>
             <div class="portfolio-empty" id="portfolio-empty" hidden>
                 <div class="portfolio-empty-icon"><i class="bi bi-palette" aria-hidden="true"></i></div>
-                <h3>Seu portfólio começa aqui</h3>
-                <p>Publique suas criações para elas aparecerem nesta galeria.</p>
+                <h3 id="portfolio-empty-title">Seu portfólio começa aqui</h3>
+                <p id="portfolio-empty-description">Publique suas criações para elas aparecerem nesta galeria.</p>
                 <a href="novopost.html" class="portfolio-create-link"><i class="bi bi-plus-circle" aria-hidden="true"></i> Criar publicação</a>
             </div>
             <div class="portfolio-gallery-footer">
@@ -120,6 +120,8 @@
             document.querySelector('.propostas-empresa-icon').style.display = 'none';
         }
 
+        const requestedProfileId = new URLSearchParams(window.location.search).get('id');
+        const isPublicPortfolio = Boolean(requestedProfileId);
         const profile = JSON.parse(localStorage.getItem('pallasProfile') || 'null');
         const authorName = profile?.nome?.trim() || 'Usuário';
         const initial = authorName.charAt(0).toUpperCase();
@@ -131,7 +133,7 @@
             avatar.textContent = initial;
         });
 
-        let posts = JSON.parse(localStorage.getItem('pallasPosts') || '[]');
+        let posts = isPublicPortfolio ? [] : JSON.parse(localStorage.getItem('pallasPosts') || '[]');
         const grid = document.querySelector('#portfolio-grid');
         const emptyState = document.querySelector('#portfolio-empty');
         const count = document.querySelector('#portfolio-count');
@@ -146,6 +148,8 @@
         const removeImageButton = document.querySelector('#portfolio-edit-remove-image');
         const editorMessage = document.querySelector('#portfolio-editor-message');
         const deletePostButton = document.querySelector('#portfolio-editor-delete');
+        const emptyTitle = document.querySelector('#portfolio-empty-title');
+        const emptyDescription = document.querySelector('#portfolio-empty-description');
         let editingPostId = null;
         let removeCurrentImage = false;
         let previewObjectUrl = null;
@@ -153,7 +157,7 @@
         const updateGalleryState = () => {
             count.textContent = `${posts.length} ${posts.length === 1 ? 'trabalho' : 'trabalhos'}`;
             emptyState.hidden = posts.length > 0;
-            galleryFooter.hidden = posts.length === 0;
+            galleryFooter.hidden = isPublicPortfolio || posts.length === 0;
         };
 
         const renderPosts = () => {
@@ -185,8 +189,9 @@
                 const caption = document.createElement('h3');
                 caption.textContent = post.caption || 'Trabalho sem título';
                 details.append(category, caption);
-                if (post.createdAt) {
-                    const date = new Date(post.createdAt);
+                const createdAt = post.createdAt || post.criado_em;
+                if (createdAt) {
+                    const date = new Date(createdAt);
                     if (!Number.isNaN(date.getTime())) {
                         const dateLabel = document.createElement('time');
                         dateLabel.dateTime = date.toISOString();
@@ -199,12 +204,15 @@
                     }
                 }
 
-                const editButton = document.createElement('button');
-                editButton.className = 'portfolio-edit-button';
-                editButton.type = 'button';
-                editButton.innerHTML = '<i class="bi bi-pencil" aria-hidden="true"></i> Editar';
-                editButton.setAttribute('aria-label', `Editar ${post.caption || 'trabalho'}`);
-                editButton.addEventListener('click', () => {
+                const actions = document.createElement('div');
+                actions.className = 'portfolio-work-actions';
+                if (!isPublicPortfolio) {
+                    const editButton = document.createElement('button');
+                    editButton.className = 'portfolio-edit-button';
+                    editButton.type = 'button';
+                    editButton.innerHTML = '<i class="bi bi-pencil" aria-hidden="true"></i> Editar';
+                    editButton.setAttribute('aria-label', `Editar ${post.caption || 'trabalho'}`);
+                    editButton.addEventListener('click', () => {
                     editingPostId = post.id;
                     captionInput.value = post.caption || '';
                     categoryInput.value = post.category || 'Portfólio';
@@ -220,14 +228,74 @@
                     }
                     editor.showModal();
                     captionInput.focus();
-                });
-                const actions = document.createElement('div');
-                actions.className = 'portfolio-work-actions';
-                actions.append(editButton);
-                card.append(cover, details, actions);
+                    });
+                    actions.append(editButton);
+                }
+                card.append(cover, details);
+                if (actions.hasChildNodes()) card.append(actions);
                 grid.append(card);
             });
         };
+
+        async function loadPublicPortfolio() {
+            document.querySelector('#portfolio-back').href = `perfil-publico.html?id=${encodeURIComponent(requestedProfileId)}`;
+            document.querySelector('#portfolio-profile-link').href = `perfil-publico.html?id=${encodeURIComponent(requestedProfileId)}`;
+            document.querySelector('#portfolio-eyebrow').textContent = 'PORTFÓLIO';
+            document.querySelector('#portfolio-title').textContent = 'Portfólio';
+            document.querySelector('#portfolio-gallery-title').textContent = 'Criações';
+            document.querySelector('#portfolio-empty-title').textContent = 'Este portfólio ainda está vazio';
+            document.querySelector('#portfolio-empty-description').textContent = 'As publicações deste perfil aparecerão aqui.';
+            document.querySelector('.portfolio-gallery-footer').hidden = true;
+            document.querySelector('#portfolio-empty .portfolio-create-link').hidden = true;
+            document.querySelector('#portfolio-editor').hidden = true;
+
+            try {
+                const profileResponse = await fetch(`/api/perfil-publico/${encodeURIComponent(requestedProfileId)}`);
+                const profileResult = await profileResponse.json();
+                if (!profileResponse.ok || !profileResult.sucesso || !profileResult.dados) {
+                    throw new Error(profileResult.mensagem || 'Não foi possível carregar este perfil.');
+                }
+
+                const data = profileResult.dados;
+                const name = data.nome_artistico || data.nome || data.nome_fantasia || data.razao_social || 'Usuário';
+                const userId = String(data.usuario_id?._id || data.usuario_id || data._id);
+                const avatar = data.avatar;
+                document.title = `Portfólio de ${name} | Pallas Ateliê`;
+                document.querySelector('#portfolio-name').textContent = name;
+                document.querySelector('#portfolio-username').textContent = data.usuario_id?.login ? `@${data.usuario_id.login}` : '';
+                document.querySelector('#portfolio-art-type').textContent = profileResult.tipo || 'Artista';
+                document.querySelector('#portfolio-profile-link').href = `perfil-publico.html?id=${encodeURIComponent(userId)}`;
+
+                const avatarElement = document.querySelector('#portfolio-avatar');
+                if (avatar) {
+                    const image = document.createElement('img');
+                    image.src = avatar;
+                    image.alt = `Foto de ${name}`;
+                    image.style.width = '100%';
+                    image.style.height = '100%';
+                    image.style.objectFit = 'cover';
+                    image.style.borderRadius = '50%';
+                    avatarElement.replaceChildren(image);
+                } else {
+                    avatarElement.textContent = name.charAt(0).toUpperCase();
+                }
+
+                const postsResponse = await fetch(`/api/publicacoes/usuario/${encodeURIComponent(userId)}`);
+                const postsResult = await postsResponse.json();
+                if (!postsResponse.ok || !postsResult.sucesso || !Array.isArray(postsResult.dados)) {
+                    throw new Error(postsResult.mensagem || 'Não foi possível carregar as publicações deste perfil.');
+                }
+
+                posts = postsResult.dados;
+                renderPosts();
+            } catch (error) {
+                console.error('Erro ao carregar portfólio público:', error);
+                emptyTitle.textContent = 'Não foi possível carregar o portfólio';
+                emptyDescription.textContent = error.message || 'Tente novamente mais tarde.';
+                posts = [];
+                renderPosts();
+            }
+        }
 
         const clearPreviewObjectUrl = () => {
             if (!previewObjectUrl) return;
@@ -341,7 +409,11 @@
         document.querySelector('#portfolio-editor-cancel').addEventListener('click', closeEditor);
         editor.addEventListener('close', clearPreviewObjectUrl);
 
-        renderPosts();
+        if (isPublicPortfolio) {
+            loadPublicPortfolio();
+        } else {
+            renderPosts();
+        }
 
         let lastScrollTop = 0;
         window.addEventListener('scroll', () => {

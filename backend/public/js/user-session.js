@@ -51,7 +51,6 @@
         const avatarSelectors = [
             '.social-header .profile-mini .avatar',
             '#header-avatar',
-            '#portfolio-avatar',
             '#post-avatar',
             '#profile-avatar-preview',
             '.social-profile .avatar',
@@ -61,7 +60,11 @@
             '.edit-profile-container .avatar'
         ].join(', ');
 
-        document.querySelectorAll(avatarSelectors).forEach((avatarEl) => {
+        const portfolioAvatar = document.querySelector('#portfolio-avatar');
+        const isPublicPortfolio = window.location.pathname.endsWith('/meuportifolio.html')
+            && new URLSearchParams(window.location.search).has('id');
+        const avatarElements = document.querySelectorAll(avatarSelectors);
+        avatarElements.forEach((avatarEl) => {
             if (avatarSrc) {
                 avatarEl.textContent = '';
                 const img = document.createElement('img');
@@ -78,6 +81,18 @@
                 avatarEl.classList.remove('has-image');
             }
         });
+        if (portfolioAvatar && !isPublicPortfolio && avatarSrc) {
+            portfolioAvatar.textContent = '';
+            const img = document.createElement('img');
+            img.src = avatarSrc;
+            img.alt = displayName;
+            img.style.width = '100%';
+            img.style.height = '100%';
+            img.style.objectFit = 'cover';
+            img.style.borderRadius = '50%';
+            portfolioAvatar.replaceChildren(img);
+            portfolioAvatar.classList.add('has-image');
+        }
 
         // Atualizar Banner/Cover
         if (coverSrc) {

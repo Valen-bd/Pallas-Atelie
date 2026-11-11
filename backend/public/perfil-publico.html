@@ -44,6 +44,7 @@
                     <button id="btn-follow" class="perfil-btn" type="button" style="cursor:pointer;">
                         <i class="bi bi-person-plus-fill"></i> <span id="follow-text">Seguir</span>
                     </button>
+                    <a id="public-portfolio-link" href="#" class="perfil-btn perfil-btn-secondary">Ver portfólio</a>
                     <a href="outros.html" class="perfil-btn perfil-btn-secondary"><i class="bi bi-people" aria-hidden="true"></i> Ver outros perfis</a>
                 </div>
             </div>
@@ -145,6 +146,7 @@
                 targetUserId = String(data.usuario_id?._id || data.usuario_id || data._id);
 
                 profilePage.hidden = false;
+                document.querySelector('#public-portfolio-link').href = `meuportifolio.html?id=${encodeURIComponent(targetUserId)}`;
                 document.title = `${name} | Pallas Ateliê`;
                 document.querySelector('#public-name').textContent = name;
                 document.querySelector('#public-handle').textContent = `${handle} • ${tipo}`;
