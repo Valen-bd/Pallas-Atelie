@@ -1,5 +1,5 @@
 (() => {
-    const imageSelector = '.post-card > img';
+    const imageSelector = '.post-card > img, .portfolio-work-cover img';
 
     const viewer = document.createElement('dialog');
     viewer.className = 'image-viewer';

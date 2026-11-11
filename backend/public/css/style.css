@@ -1039,11 +1039,13 @@ body {
             border-radius: 18px;
         }
 
-        .post-card > img {
+        .post-card > img,
+        .portfolio-work-cover img {
             cursor: zoom-in;
         }
 
-        .post-card > img:focus-visible {
+        .post-card > img:focus-visible,
+        .portfolio-work-cover img:focus-visible {
             outline: 3px solid #414cd0;
             outline-offset: 3px;
         }
