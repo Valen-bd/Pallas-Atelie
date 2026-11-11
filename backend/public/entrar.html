@@ -3,7 +3,7 @@
 <head>
     <meta charset="UTF-8">
     <meta name="viewport" content="width=device-width, initial-scale=1.0">
-    <title>Entrar | Pallas AteliÃª</title>
+    <title>Entrar | Pallas Ateliê</title>
     <link rel="shortcut icon" type="image/png" href="images/PA-TCC logo.png">
     <link rel="stylesheet" href="./css/style.css">
 </head>
@@ -12,10 +12,10 @@
         <nav class="navbar">
             <div class="nav-container">
                 <div class="logo">
-                    <img src="images/pa1.png" id="logimagem" alt="Logo Pallas AteliÃª">
+                    <img src="images/pa1.png" id="logimagem" alt="Logo Pallas Ateliê">
                 </div>
                 <ul class="nav-menu">
-                    <li><a href="index.html" class="nav-link">InÃ­cio</a></li>
+                    <li><a href="index.html" class="nav-link">Início</a></li>
                     <li><a href="sobre.html" class="nav-link">Sobre</a></li>
                     <li><a href="contato.html" class="nav-link">Contato</a></li>
                 </ul>
@@ -61,7 +61,7 @@
                 try {
                     data = JSON.parse(text);
                 } catch (error) {
-                    throw new Error('A API respondeu com conteÃºdo invÃ¡lido. Verifique se o backend estÃ¡ rodando em http://localhost:3000');
+                    throw new Error('A API respondeu com conteúdo inválido. Verifique se o backend está rodando em http://localhost:3000');
                 }
             }
 
@@ -100,7 +100,7 @@
                 });
 
                 if (!response.ok || !data.sucesso) {
-                    exibirAlerta(data.mensagem || 'Credenciais invÃ¡lidas.');
+                    exibirAlerta(data.mensagem || 'Credenciais inválidas.');
                     submitBtn.disabled = false;
                     submitBtn.innerText = 'Entrar';
                     return;
@@ -115,7 +115,7 @@
                     window.location.href = 'inicial.html';
                 }, 1000);
             } catch (err) {
-                exibirAlerta('Erro de conexÃ£o com o servidor: ' + err.message);
+                exibirAlerta('Erro de conexão com o servidor: ' + err.message);
                 submitBtn.disabled = false;
                 submitBtn.innerText = 'Entrar';
             }
@@ -123,5 +123,4 @@
     </script>
 </body>
 </html>
-
 
