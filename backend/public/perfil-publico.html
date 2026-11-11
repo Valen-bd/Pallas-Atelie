@@ -180,10 +180,8 @@
                     avatarEl.textContent = initial;
                 }
 
-                if (data.cover) {
-                    const coverEl = document.querySelector('#public-cover');
-                    if (coverEl) coverEl.style.backgroundImage = `url("${data.cover}")`;
-                }
+                const coverEl = document.querySelector('#public-cover');
+                if (coverEl) coverEl.style.backgroundImage = data.cover ? `url("${data.cover}")` : '';
 
             } catch (err) {
                 console.error('Erro ao buscar perfil público:', err);

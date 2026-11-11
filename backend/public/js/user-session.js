@@ -81,7 +81,7 @@
 
         // Atualizar Banner/Cover
         if (coverSrc) {
-            document.querySelectorAll('.perfil-cover, #profile-cover-preview').forEach((coverEl) => {
+            document.querySelectorAll('body:not(.public-profile-page) .perfil-cover, #profile-cover-preview').forEach((coverEl) => {
                 coverEl.style.backgroundImage = `url("${coverSrc}")`;
                 coverEl.classList.add('has-image');
             });
